@@ -1,0 +1,6 @@
+O experimento vai ser desta forma: 
+1 - vamos fragmentar e anotar (se codificante ou não e se codificante em qual frame de leitura) os fragmentos dos exons e introns do cromossomo 1 humano. 
+2 - vamos fazer a montagem dos exons com esses fragmentos e medir o tempo e o numero de fragmentos, 
+3 - vamos passar os fragmentos pela rede discriminatória para ficarmos apenas com os classificados como codificantes, 
+4 - vamos fazer a montagem apenas com eles e vamos a medir o tempo (e verificar a cobertura, ou seja se todo o exon foi coberto pelos fragmentos selecionados).
+5 - vamos comparar os tempos
