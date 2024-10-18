@@ -4,3 +4,15 @@ O experimento vai ser desta forma:
 3 - vamos passar os fragmentos pela rede discriminatória para ficarmos apenas com os classificados como codificantes, 
 4 - vamos fazer a montagem apenas com eles e vamos a medir o tempo (e verificar a cobertura, ou seja se todo o exon foi coberto pelos fragmentos selecionados).
 5 - vamos comparar os tempos
+
+
+..:Agora a tarefa é alinhar os cdss contra o cromossomo para encontrar as posições reais nele onde começa e termina. O que não é fácil, porque esses CDS são formados por um conjunto de segmentos. Veja no label de qualquer um que aparece location = join(...)
+..:Ou seja, que em vez de alinhar diretamente os CDSs temos que alinhar cada segmento deles. O objetivo é identificar os trechos entre esses segmentos que são as partes não codificantes.
+..:Tem também a complicação que alguns desses CDSs estão na fita complementar, pelo que para alimha-los, temos que usar o reverso complementar do genoma do cromossomo 1. Mas vamos ir por partes
+..:Veja que em algumas location aparece complement.
+
+
+..:Primeiro tem que dividir os CDSs de acordo com o tamanho dos segmentos que o formam, antes de poder alinhar
+..: Se um CDS tem comprimento 100, e é formado por dois segmentos location=join(300..330, 500..570), então vc tem.que tirar os primeiros 330-300= 30 nucleotídeos e colocar no arquivo para alinhar e depois adicionar os 570-500=70 nucleotídeos em outro fragmento no mesmo arquivo para alinhar
+..: Vai fazer isso para os que não tem complement e para os que tem complement, arquivos distintos
+..: Na hora de alinhar vc vai usar o genoma normal para alinhar os fragmentos sem.complement, mas vai usar o genoma reverso complementar para alinhar os fragmentos do arquivo dos que tem complement
