@@ -33,10 +33,9 @@ class PrepareToAling:
                     
             
         except FileNotFoundError as e:
-            print("Erro: "+ str(e))
-            
+            raise e
         except PermissionError as e:
-            print("Erro: "+ str(e))
+            raise e
             
     def getCoordenadas(self) -> None:
         # Inicializa a lista de coordenadas
@@ -74,5 +73,4 @@ for inter in range(1, 39):
     prepare.getCoordenadas()
     print(prepare.coordenadas)
     
-    
- 
+
