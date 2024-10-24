@@ -159,6 +159,8 @@ class PrepareToAling:
 if __name__ == "__main__":
     base_directory = os.getcwd()
 
+    withComplement = 1
+    withoutComplement = 1
     for inter in range(1, 39):
         directory = os.path.join(base_directory, f"chromosome1HomoSapien/CDS{inter}.fasta")
         print(f"Preparando o arquivo: {directory}")
@@ -169,10 +171,12 @@ if __name__ == "__main__":
         prepare.defineSegments()
         destine = ""
         if prepare.complement == True:
-            destine = os.path.join(base_directory, "CDSsPreparadosC",f"cds{inter}.fasta")
+            destine = os.path.join(base_directory, "CDSsPreparadosC",f"cds{withComplement}.fasta")
+            withComplement += 1
             
         else:
-            destine = os.path.join(base_directory, "CDSsPreparados",f"cds{inter}.fasta")
+            destine = os.path.join(base_directory, "CDSsPreparados",f"cds{withoutComplement}.fasta")
+            withoutComplement += 1
         
         prepare.write(destine)
     
