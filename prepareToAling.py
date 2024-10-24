@@ -7,6 +7,8 @@ class PrepareToAling:
         self.sequence = dict()
         # Lista para armazenar as coordenadas
         self.coordenadas = list()
+        #posições validas:
+        self.positions = list()
 
     def getSequence(self, directory: str) -> None:
 
@@ -30,7 +32,8 @@ class PrepareToAling:
                 # Adiciona a última sequência após o loop
                 if sequence_name and sequence:
                     self.sequence[sequence_name] = sequence
-                    
+            
+            
             
         except FileNotFoundError as e:
             raise e
@@ -57,6 +60,16 @@ class PrepareToAling:
         self.coordenadas = coordenadas
     
         print("Coordenadas obtidas com sucesso!")
+
+    # trata o segmento, caso seja um complemento de sequência
+    
+    # obtém os segmentos válidos para as sequências de acordo com as coordenadas
+    def defineSegments(self):
+        for sequence in self.coordenadas:
+            if not sequence.startswth("c"):
+                ...
+            else:
+                ...
         
 
 
@@ -70,7 +83,6 @@ for inter in range(1, 39):
     print(f"Preparando o arquivo: {directory}")
     prepare = PrepareToAling()
     prepare.getSequence(directory)
-    prepare.getCoordenadas()
-    print(prepare.coordenadas)
+    
     
 
