@@ -49,6 +49,7 @@ print("coordenadas:", newCO)
 newList = list()
 
 start = 0  # Indica o ponto inicial na sequência de nucleotídeos
+Ncoordenada = 0
 for seq_len in newCO:  # 'seq_len' é o tamanho do fragmento entre as coordenadas
     cds = ""
     end = start + seq_len  # Calcula a coordenada final do fragmento
@@ -56,8 +57,8 @@ for seq_len in newCO:  # 'seq_len' é o tamanho do fragmento entre as coordenada
         cds += lista[1][i]  # Adiciona os nucleotídeos à sublista
     newList.append(cds)  # Adiciona a sublista à lista final
     start = end  # Atualiza o início para a próxima iteração
-
-print(newList)
-print(len(newList[1]))
+    
+    Ncoordenada += 1
+print(Ncoordenada)
 
 

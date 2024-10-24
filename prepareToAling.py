@@ -7,8 +7,12 @@ class PrepareToAling:
         self.sequence = dict()
         # Lista para armazenar as coordenadas
         self.coordenadas = list()
+        # Aponta para quais coordenadas devo tratar
+        self.coordenadasTotreat = list()
         #posições validas:
         self.positions = list()
+        #segmentos já tratados
+        self.treatedSegments = list()
 
     def getSequence(self, directory: str) -> None:
 
@@ -60,16 +64,72 @@ class PrepareToAling:
         self.coordenadas = coordenadas
     
         print("Coordenadas obtidas com sucesso!")
+    #define as posições corretas
 
+    def definePosition(self):
+
+        cont = 0
+        for i in self.coordenadas:
+            coordenada = 0
+            
+            if i[0].startswith("c"):
+                self.coordenadasTotreat.append(cont)
+                i[0] = i[0].replace("c","")
+            
+            cont += 1
+            coordenada = int(i[1]) - int(i[0])
+            self.positions.append(coordenada)
+        
     # trata o segmento, caso seja um complemento de sequência
+    def treatComplement(self, segment: str) -> str:
+        swap = {
+            "A": "T",
+            "T": "A",
+            "G": "C",
+            "C": "G"  
+        }
+        
+        newseg = ""
+        for i in segment:
+            newseg += swap[i]  
+
+        
+        return newseg[::-1]  # Inverte a sequência complementar
     
     # obtém os segmentos válidos para as sequências de acordo com as coordenadas
     def defineSegments(self):
-        for sequence in self.coordenadas:
-            if not sequence.startswth("c"):
-                ...
-            else:
-                ...
+        key = next(iter(self.sequence))
+        sequence = self.sequence[key]  
+        start = 0
+
+        # usa para verificar o index que aponta para o segmento que preciso tratar o complementar
+        cont = 0
+        
+        for seq_len in self.positions:
+
+            cds = ""
+            end = start + seq_len
+            
+            
+            for i in range(start, end):
+                cds += sequence[i]
+
+            if cont in self.coordenadasTotreat:
+                
+                cds = self.treatComplement(cds)
+                
+
+            cont += 1
+            self.treatedSegments.append(cds)
+            start = end
+
+    
+
+            
+            
+            
+
+           
         
 
 
@@ -78,11 +138,21 @@ class PrepareToAling:
 
 base_directory = os.getcwd()
 
-for inter in range(1, 39):
+for inter in range(2, 39):
     directory = os.path.join(base_directory, f"chromosome1HomoSapien/CDS{inter}.fasta")
     print(f"Preparando o arquivo: {directory}")
     prepare = PrepareToAling()
     prepare.getSequence(directory)
+    prepare.getCoordenadas()
+    prepare.definePosition()
+    
+    """prepare.defineSegments()
+    
+    print(prepare.treatedSegments)"""
+    break
+    
+    
+    
     
     
 
