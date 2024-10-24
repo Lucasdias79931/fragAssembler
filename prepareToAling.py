@@ -118,9 +118,24 @@ class PrepareToAling:
             start = end
 
     #preprara o cabeçalho para cada seguimento
-    def prepareCab(self):
+    def prepareCab(self, nCoordenada):
         header = next(iter(self.sequence))
         print(header)
+        
+        # Expressão regular para extrair os elementos desejados
+        pattern = r'^(.*?):.*?(H.*)$'
+
+        # Busca os padrões na string
+        match = re.search(pattern, header)
+        
+        header = list(match.groups())
+
+        
+        coordenada = f"{self.coordenadas[nCoordenada][0]}-{self.coordenadas[nCoordenada][1]}"
+
+        print(f"{header[0]}:{coordenada} {header[1]}")
+        return f"{header[0]}:{coordenada} {header[1]}"
+        
             
             
             
@@ -143,9 +158,7 @@ for inter in range(2, 39):
     prepare.definePosition()
     prepare.defineSegments()
 
-    prepare.prepareCab()
-
-
+   
     
 
   
