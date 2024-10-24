@@ -133,18 +133,18 @@ class PrepareToAling:
         
         coordenada = f"{self.coordenadas[nCoordenada][0]}-{self.coordenadas[nCoordenada][1]}"
 
-        print(f"{header[0]}:{coordenada} {header[1]}")
-        return f"{header[0]}:{coordenada} {header[1]}"
+       
+        return f">{header[0]}:{coordenada} {header[1]}"
         
     # escreve os CDSs nos arquivos.fasta 
     def write(self, directory):
         try:
-            with open(directory, "a") as file:
+            with open(directory, "w") as file:
                 for nCoordenada in range(len(self.coordenadas)):
                     header = self.prepareCab(nCoordenada)
                     segment = self.treatedSegments[nCoordenada]
                     
-                    file.write(f"{header}\n{segment}")
+                    file.write(f"{header}\n{segment}\n")
                     
 
         except FileExistsError as e:   
@@ -159,7 +159,7 @@ class PrepareToAling:
 
 base_directory = os.getcwd()
 
-for inter in range(2, 39):
+for inter in range(1, 39):
     directory = os.path.join(base_directory, f"chromosome1HomoSapien/CDS{inter}.fasta")
     print(f"Preparando o arquivo: {directory}")
     prepare = PrepareToAling()
@@ -167,13 +167,15 @@ for inter in range(2, 39):
     prepare.getCoordenadas()
     prepare.definePosition()
     prepare.defineSegments()
+    destine = ""
+    if prepare.complement == True:
+        destine = os.path.join(base_directory, "CDSsPreparadosC",f"cds{inter}.fasta")
+        
+    else:
+        destine = os.path.join(base_directory, "CDSsPreparados",f"cds{inter}.fasta")
     
-
-   
+    prepare.write(destine)
     
-
-  
-    break
     
     
     
