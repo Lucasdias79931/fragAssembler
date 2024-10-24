@@ -136,9 +136,19 @@ class PrepareToAling:
         print(f"{header[0]}:{coordenada} {header[1]}")
         return f"{header[0]}:{coordenada} {header[1]}"
         
-            
-            
-            
+    # escreve os CDSs nos arquivos.fasta 
+    def write(self, directory):
+        try:
+            with open(directory, "a") as file:
+                for nCoordenada in range(len(self.coordenadas)):
+                    header = self.prepareCab(nCoordenada)
+                    segment = self.treatedSegments[nCoordenada]
+                    
+                    file.write(f"{header}\n{segment}")
+                    
+
+        except FileExistsError as e:   
+            print(e)    
 
            
         
@@ -157,6 +167,7 @@ for inter in range(2, 39):
     prepare.getCoordenadas()
     prepare.definePosition()
     prepare.defineSegments()
+    
 
    
     
