@@ -120,7 +120,7 @@ class PrepareToAling:
     #preprara o cabeçalho para cada seguimento
     def prepareCab(self):
         header = next(iter(self.sequence))
-        
+        print(header)
             
             
             
@@ -142,6 +142,8 @@ for inter in range(2, 39):
     prepare.getCoordenadas()
     prepare.definePosition()
     prepare.defineSegments()
+
+    prepare.prepareCab()
 
 
     
