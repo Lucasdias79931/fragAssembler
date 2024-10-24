@@ -69,16 +69,25 @@ class PrepareToAling:
     def definePosition(self):
 
         cont = 0
-        for i in self.coordenadas:
-            coordenada = 0
+        for i in range(len(self.coordenadas)):
+            start = self.coordenadas[i][0]
+            end = self.coordenadas[i][1]
             
-            if i[0].startswith("c"):
+            if start .startswith("c"):
                 self.coordenadasTotreat.append(cont)
-                i[0] = i[0].replace("c","")
+                start  = start .replace("c","")
+                
             
-            cont += 1
-            coordenada = int(i[1]) - int(i[0])
-            self.positions.append(coordenada)
+                cont += 1
+                # start - end pois está invertido a ordem da sequencia.
+                coordenada = int(start) - int(end)
+                self.positions.append(coordenada)
+            else:
+
+                cont += 1
+                
+                coordenada = int(end) - int(start)
+                self.positions.append(coordenada)
         
     # trata o segmento, caso seja um complemento de sequência
     def treatComplement(self, segment: str) -> str:
@@ -145,10 +154,10 @@ for inter in range(2, 39):
     prepare.getSequence(directory)
     prepare.getCoordenadas()
     prepare.definePosition()
-    
-    """prepare.defineSegments()
-    
-    print(prepare.treatedSegments)"""
+
+    prepare.defineSegments()
+
+  
     break
     
     
