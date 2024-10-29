@@ -9,10 +9,10 @@ base_directory = os.getcwd()
 
 # Alinhar com Minimap2
 start_timeWithMinimap2 = time.time()
-for i in range(1, 27):
-    reference_fasta = os.path.join(base_directory, f"chromosome1HomoSapien/sequence.fasta")
-    fragments_fasta = os.path.join(base_directory, f"CDSsPreparados/cds{i}.fasta")
-    seqs_alinhadas = os.path.join(base_directory, f"CDSsSemComplementosAlinhados/cds{i}Alinhado.sam")
+for i in range(1, 13):
+    reference_fasta = os.path.join(base_directory, f"chromosome1HomoSapien/reversedSequence.fasta")
+    fragments_fasta = os.path.join(base_directory, f"CDSsPreparadosC/cds{i}.fasta")
+    seqs_alinhadas = os.path.join(base_directory, f"CDSsComComplementosAlinhados/cds{i}Alinhado.sam")
 
     aligner = Minimap2(reference_fasta, fragments_fasta, seqs_alinhadas)
     align = Align(aligner)
