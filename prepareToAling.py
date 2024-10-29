@@ -171,11 +171,11 @@ if __name__ == "__main__":
         prepare.defineSegments()
         destine = ""
         if prepare.complement == True:
-            destine = os.path.join(base_directory, "CDSsPreparadosC",f"cds{withComplement}.fasta")
+            destine = os.path.join(base_directory, "CDSsComplementarPreparadosParaAlinhar",f"cds{withComplement}.fasta")
             withComplement += 1
             
         else:
-            destine = os.path.join(base_directory, "CDSsPreparados",f"cds{withoutComplement}.fasta")
+            destine = os.path.join(base_directory, "CDSsPreparadosParaAlinhar",f"cds{withoutComplement}.fasta")
             withoutComplement += 1
         
         prepare.write(destine)

@@ -72,26 +72,26 @@ class Generator:
             print("Erro:" + str(error))
 
 ###################### Início ##########################
+if __name__ == "__name__":
+    base_directory = os.getcwd()
+    fragmentsG = Generator()
 
-base_directory = os.getcwd()
-fragmentsG = Generator()
+    sequencesToFragments = []
 
-sequencesToFragments = []
+    # Loop para processar cada arquivo FASTA
+    for i in range(1, 5):
+        file_to_fragments = os.path.join(base_directory, f"referencias/refseq_envelope_denv{i}.fasta")
+        
+        seq = fragmentsG.get_sequences(file_to_fragments)
+        
+        if seq:  # Verifica se a sequência foi lida com sucesso
+            sequencesToFragments.append(seq)
 
-# Loop para processar cada arquivo FASTA
-for i in range(1, 5):
-    file_to_fragments = os.path.join(base_directory, f"referencias/refseq_envelope_denv{i}.fasta")
-    
-    seq = fragmentsG.get_sequences(file_to_fragments)
-    
-    if seq:  # Verifica se a sequência foi lida com sucesso
-        sequencesToFragments.append(seq)
+    # Gera e escreve fragmentos
+    for i, sequencia in enumerate(sequencesToFragments, start=1):
+        
+        fragments = fragmentsG.fragmentos(sequencia)
 
-# Gera e escreve fragmentos
-for i, sequencia in enumerate(sequencesToFragments, start=1):
-    
-    fragments = fragmentsG.fragmentos(sequencia)
-
-    directory_fragments = os.path.join(base_directory, f"fragmentos/fragEnv{i}.fasta")
-    print(f"Escrevendo em: {directory_fragments}")
-    fragmentsG.write_frag(fragments, directory_fragments)
+        directory_fragments = os.path.join(base_directory, f"fragmentos/fragEnv{i}.fasta")
+        print(f"Escrevendo em: {directory_fragments}")
+        fragmentsG.write_frag(fragments, directory_fragments)
