@@ -53,41 +53,9 @@ class Align:
     def perform_alignment(self):
         self.aligner.align()
 
-################################ Executar #########################
-if __name__ == "__main__":
-    base_directory = os.getcwd()
-
-    # Alinhar com Minimap2
-    start_timeWithMinimap2 = time.time()
-    for i in range(1, 5):
-        reference_fasta = os.path.join(base_directory, f"referencias/refseq_envelope_denv{i}.fasta")
-        fragments_fasta = os.path.join(base_directory, f"fragmentos/fragEnv{i}.fasta")
-        seqs_alinhadas = os.path.join(base_directory, f"sequenciasAlinhadas_com_minimap2/Env{i}.sam")
-
-        aligner = Minimap2(reference_fasta, fragments_fasta, seqs_alinhadas)
-        align = Align(aligner)
-        align.perform_alignment()
-
-    elapsed_timeWithMinimap2  = time.time() - start_timeWithMinimap2 
-
-    # Alinhar com MAFFT
-    start_timeWithMafft = time.time()
-    for i in range(1, 5):
-        reference_fasta = os.path.join(base_directory, f"referencias/refseq_envelope_denv{i}.fasta")
-        fragments_fasta = os.path.join(base_directory, f"fragmentos/fragEnv{i}.fasta")
-        seqs_alinhadas = os.path.join(base_directory, f"sequenciasAlinhadas_com_mafft/Env{i}.fasta")
-
-        aligner = Mafft(reference_fasta, fragments_fasta, seqs_alinhadas)
-        align = Align(aligner)
-        align.perform_alignment()
-
-    elapsed_timeWithMafft = time.time() - start_timeWithMafft
 
 
 
 
-
-    print(f"Alinhamento Minimap2 concluído. Tempo de execução: {elapsed_timeWithMinimap2 :.2f} segundos")
-    print(f"Alinhamento MAFFT concluído. Tempo de execução: {elapsed_timeWithMafft:.2f} segundos")
 
 
