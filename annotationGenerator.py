@@ -13,7 +13,7 @@ class annotation:
                 for line in file:
                     if line.startswith(">"):
                         
-                        self.annotations.append(re.split(r':| ', line))
+                        self.annotations.append(line.strip())
             print("Annotations obitidas com sucesso")
         except FileNotFoundError as e:
             print(f"Error:{e}")
@@ -24,7 +24,7 @@ class annotation:
            
             with open(destine, "w") as file:
                 for ann in self.annotations:
-                    file.write(f"{ann[0]}\n")
+                    file.write(f"{ann}\n")
             print(f"Anotações escritas no diretorio:{destine}")
         except FileNotFoundError as e:
             print(f"Error:{e}")
@@ -69,7 +69,7 @@ if __name__ == "__main__":
             Annotation.clear_Ann()
         print("CDSs anotados com sucesso!\n")
     except SystemError as e:
-            print(e)   
+            print(e)  
         
     try:
         print("Anotar sequência")

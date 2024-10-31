@@ -8,7 +8,7 @@ typedef struct{
     char *sequence;
 }Sec;
 
-int max = 500;
+int max = 5000;
 
 Sec *getSec(char *from_directory) {
     FILE *file = fopen(from_directory, "r");
@@ -64,6 +64,7 @@ Sec *getSec(char *from_directory) {
 
     return Sequence;
 }
+
 
 
 
