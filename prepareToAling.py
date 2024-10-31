@@ -1,6 +1,6 @@
 import os
 import re
-
+import time
 class PrepareToAling:
     def __init__(self) -> None:
         # Dicionário para armazenar a sequência
@@ -30,7 +30,7 @@ class PrepareToAling:
                         if sequence_name and sequence: 
                         
                             self.sequence[sequence_name] = sequence
-                        sequence_name = line.strip().replace('>', '')  # Remove o '>'
+                        sequence_name = line.strip().replace('>', '')  # Remove o '>' e o \n
                         sequence = ""  # Reseta a sequência
 
                 # Adiciona a última sequência após o loop
@@ -120,7 +120,7 @@ class PrepareToAling:
     #preprara o cabeçalho para cada seguimento
     def prepareCab(self, nCoordenada):
         header = next(iter(self.sequence))
-        print(header)
+        
         
         # Expressão regular para extrair os elementos desejados
         pattern = r'^(.*?):.*?(H.*)$'
@@ -145,7 +145,7 @@ class PrepareToAling:
                     segment = self.treatedSegments[nCoordenada]
                     
                     file.write(f"{header}\n{segment}\n")
-                    
+            print("Inscrição realizada com sucesso!")
 
         except FileExistsError as e:   
             print(e)    
@@ -157,10 +157,14 @@ class PrepareToAling:
 
 ###################### executar #####################
 if __name__ == "__main__":
+    start = time.time()
     base_directory = os.getcwd()
 
     withComplement = 1
     withoutComplement = 1
+
+    os.makedirs("CDSsComplementarPreparadosParaAlinhar", exist_ok = True)
+    os.makedirs("CDSsPreparadosParaAlinhar", exist_ok = True)
     for inter in range(1, 39):
         directory = os.path.join(base_directory, f"chromosome1HomoSapien/CDS{inter}.fasta")
         print(f"Preparando o arquivo: {directory}")
@@ -179,6 +183,10 @@ if __name__ == "__main__":
             withoutComplement += 1
         
         prepare.write(destine)
+    
+    end = time.time() - start
+    print(f"Fim da execução\nprocedimento realizado em {end:.4f} segundos!")
+
     
     
     

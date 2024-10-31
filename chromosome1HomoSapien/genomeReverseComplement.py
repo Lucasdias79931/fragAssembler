@@ -6,8 +6,10 @@ def reversed(sequence: str)-> str:
         "A": "T",
         "T": "A",
         "C": "G",
-        "G": "C"
+        "G": "C",
+        
     }
+
     base = "ACGT"
     complementReverse = ""
     for n in sequence:
@@ -25,7 +27,7 @@ def getSeq(directory: str)-> dict:
         sequence = ""
         for line in file:
             if not line.startswith(">"):
-                sequence += line.strip()
+                sequence += line
             else:
                 sequenceName = line.strip().replace('>', '')
                 sequence = ""
