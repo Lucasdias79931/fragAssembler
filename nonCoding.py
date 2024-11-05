@@ -10,7 +10,8 @@ class NonCoding:
         #Regiões codificantes
         self.codingPositions = list()
         #Regiões ncodificantes
-        self.nocodingPositions = list()
+        self.nocoding = list()
+       
         
 
     # obtém a sequência completa
@@ -29,25 +30,49 @@ class NonCoding:
             print(f"Erro inesperado: {e}")
 
     # Busca a região codificante 
-    def getCodingPosition(self, file_name):
+    def getCodingPositions(self, file_name):
         try:
             headers = []
             with open(file_name, "r") as file:
                 for line in file:
                     if line.startswith(">"):
                         header = line.strip()
-                        
                         padrao = r"([cC]?\d+)-(\d+)"
-    
-                
                         resultados = re.findall(padrao, header)
-                        headers.extend(resultados)
-                    
+                        
+                        if resultados:
+                            
+                            if resultados[0][0].startswith("c"):
+                                resultados[0] = (resultados[0][1], resultados[0][0].replace("c", ""))
+                            headers.extend(resultados)
+                        
             self.codingPositions.extend(headers)
+
         except FileExistsError as e:
-            print("ER :" + e)
+            print("ER :" + str(e))
         except FileNotFoundError as e:
-            print("Error:" + e)
+            print("Error:" + str(e))
+
+    
+    def defineNonCodingPositions(self):
+        if not self.codingPositions:
+            print("Nenhuma sequência codificante foi encontrada")
+            return
+        
+        start = 0 
+        
+        for pos in range(len(self.codingPositions)):
+            end = int(self.codingPositions[pos][0]) - 1
+
+            self.nocoding.append((start, end))
+            start = int(self.codingPositions[pos][1])
+
+        self.nocoding.append((start, self.length))
+
+    
+        
+            
+
     
 
 
@@ -57,10 +82,13 @@ if __name__ == "__main__":
     nonCoding = NonCoding()
     nonCoding.get_sequence("chromosome1HomoSapien/sequence.fasta")
 
-    nonCoding.getCodingPosition("CDSsPreparadosParaAlinhar/cds2.fasta")
+    nonCoding.getCodingPositions("CDSsComplementarPreparadosParaAlinhar/cds2.fasta")
 
-    nonCoding.getCodingPosition("CDSsPreparadosParaAlinhar/cds3.fasta")
+    nonCoding.getCodingPositions("CDSsComplementarPreparadosParaAlinhar/cds3.fasta")
     print(f"codingPositions:{nonCoding.codingPositions}")
+    nonCoding.defineNonCodingPositions()
+    print(f"nocoding:{nonCoding.nocoding}")
+    
 
             
         
