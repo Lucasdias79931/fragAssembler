@@ -3,14 +3,19 @@ import re
 
 class NonCoding:
     def __init__(self) -> None:
+    
         #sequência completa
         self.sequence = ""
         #tamanho da sequência
         self.length = 0
         #Regiões codificantes
         self.codingPositions = list()
+        #cabecalhos das regioes codificantes
+        self.codingHeaders = list()
         #Regiões ncodificantes
         self.nocoding = list()
+        self.sequencesNocoding = list()
+        
        
         
 
@@ -36,7 +41,9 @@ class NonCoding:
             with open(file_name, "r") as file:
                 for line in file:
                     if line.startswith(">"):
-                        header = line.strip()
+                        header = line.strip().replace(">", "")
+                        
+                        self.codingHeaders.append(header)
                         padrao = r"([cC]?\d+)-(\d+)"
                         resultados = re.findall(padrao, header)
                         
@@ -44,6 +51,7 @@ class NonCoding:
                             
                             if resultados[0][0].startswith("c"):
                                 resultados[0] = (resultados[0][1], resultados[0][0].replace("c", ""))
+                            
                             headers.extend(resultados)
                         
             self.codingPositions.extend(headers)
@@ -69,7 +77,25 @@ class NonCoding:
 
         self.nocoding.append((start, self.length))
 
-    
+    #prepara o cabecalho da regiao não codificante
+    def prepareCab(self, nCoordenada, headerOri):
+        header = headerOri
+        
+        
+        # Expressão regular para extrair os elementos desejados
+        pattern = r'^(.*?):.*?(H.*)$'
+
+        # Busca os padrões na string
+        match = re.search(pattern, header)
+        
+        header = list(match.groups())
+        
+        
+        
+        
+        
+       
+        return f">{header[0]}:{self.nocoding[nCoordenada][0]}-{self.nocoding[nCoordenada][1]} {header[1]}"
         
             
 
@@ -84,10 +110,10 @@ if __name__ == "__main__":
 
     nonCoding.getCodingPositions("CDSsComplementarPreparadosParaAlinhar/cds2.fasta")
 
-    nonCoding.getCodingPositions("CDSsComplementarPreparadosParaAlinhar/cds3.fasta")
-    print(f"codingPositions:{nonCoding.codingPositions}")
     nonCoding.defineNonCodingPositions()
-    print(f"nocoding:{nonCoding.nocoding}")
+    print(nonCoding.prepareCab(0, nonCoding.codingHeaders[0]))
+    
+    
     
 
             
