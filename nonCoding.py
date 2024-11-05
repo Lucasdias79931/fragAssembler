@@ -77,6 +77,13 @@ class NonCoding:
 
         self.nocoding.append((start, self.length))
 
+    # sequences ncodificantes
+    def defineSequencesNocoding(self):
+        for i in range(len(self.nocoding)):
+            start = self.nocoding[i][0]
+            end = self.nocoding[i][1]
+            self.sequencesNocoding.append(self.sequence[start:end])
+
     #prepara o cabecalho da regiao não codificante
     def prepareCab(self, nCoordenada, headerOri):
         header = headerOri
@@ -106,12 +113,38 @@ class NonCoding:
 ################# executar ############################
 if __name__ == "__main__":
     nonCoding = NonCoding()
-    nonCoding.get_sequence("chromosome1HomoSapien/sequence.fasta")
+    nonCodingToComplement  = NonCoding()
 
-    nonCoding.getCodingPositions("CDSsComplementarPreparadosParaAlinhar/cds2.fasta")
+    
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    
+    nonCoding.get_sequence(os.path.join(here, f"chromosome1HomoSapien/sequence.fasta"))
+    for CDS in range(1, 27):
+        nonCoding.getCodingPositions(os.path.join(here, f"CDSsPreparadosParaAlinhar/CDS{CDS}.fasta"))
 
     nonCoding.defineNonCodingPositions()
-    print(nonCoding.prepareCab(0, nonCoding.codingHeaders[0]))
+    nonCoding.defineSequencesNocoding()
+
+    for i in range(len(nonCoding.nocoding)):
+        print(nonCoding.prepareCab(i, nonCoding.codingHeaders[i]))
+        print(nonCoding.sequencesNocoding[i])
+    
+    nonCodingToComplement.get_sequence(os.path.join(here, f"chromosome1HomoSapien/genomeReverse.fasta"))
+
+    for CDS in range(1, 13):
+        nonCodingToComplement.getCodingPositions(os.path.join(here, f"CDSsComplementarPreparadosParaAlinhar/CDS{CDS}.fasta"))
+
+    nonCodingToComplement.defineNonCodingPositions()
+    nonCodingToComplement.defineSequencesNocoding()
+
+    for i in range(len(nonCodingToComplement.nocoding)):
+        print(nonCodingToComplement.prepareCab(i, nonCodingToComplement.codingHeaders[i]))
+        print(nonCodingToComplement.sequencesNocoding[i])
+        
+
+
+    
     
     
     
