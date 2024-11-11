@@ -11,28 +11,28 @@ def reversed(sequence: str)-> str:
     }
 
     base = "ACGT"
-    complementReverse = ""
+    complementReverse = []
     for n in sequence:
         if n in base:
-            complementReverse += nucleotide[n]
+            complementReverse.append(nucleotide[n])
         else:
-            complementReverse += n
+            complementReverse.append(n)
 
-    return complementReverse[::-1]
+    return ''.join(complementReverse[::-1])
 
 def getSeq(directory: str)-> dict:
     
     with open(directory, "r") as file:
         sequenceName = ""
-        sequence = ""
+        sequence = []
         for line in file:
             if not line.startswith(">"):
-                sequence += line
+                sequence.append(line)
             else:
                 sequenceName = line.strip().replace('>', '')
-                sequence = ""
+                sequence = []
         if sequenceName and sequence:
-            return [sequenceName, sequence]
+            return [sequenceName, ''.join(sequence)]
         return None
 
 ################################ executar ############################

@@ -1,64 +1,61 @@
 import os 
 
-base_directory = os.getcwd()
-sequence = os.path.join(base_directory, "chromosome1HomoSapien/CDS3.fasta")
 
-lista = list()
+here = os.getcwd()
 
-try:
-    if os.path.getsize(sequence) == 0:
-        print("O arquivo está vazio.")
-    else:
-        with open(sequence, "r") as file:
-            seq = ""
+def reversed(sec):
+    swap = {
+    "A":"T",
+    "T":"A",
+    "G":"C",
+    "C":"G"
+    }
+
+    nu = "AGTC"
+
+    n = []
+    for i in sec:
+        if i in nu:
+            n.append(swap[i])
+        else:
+            n.append(i)
+    return (''.join(n))[::-1]
+def getSec(directory, reverse = None):
+    try:
+        with open(directory, "r") as file:
+            sequence = []
             for line in file:
                 if not line.startswith(">"):
-                    seq += line.strip()
-                else:
+                    sequence.append(line.strip())  # Adiciona a linha como string sem espaços em branco
             
-                    lista.append(line.strip())
-            lista.append(seq)
+           
+              # Junta as strings em uma única sequência
+            if not reverse:
+                return ''.join(sequence)
+            else:
+                return reversed(''.join(sequence))
+        
+    except FileNotFoundError as e:
+        print(e)
 
-except FileNotFoundError as e:
-    print(f"Erro: {e}")
-except PermissionError as e:
-    print(f"Erro de permissão: {e}")
+test = 'ATGCGTAGACACACACATCCTTACTCTGCGCGCATCCCTGGCCTGGTGGACGGAAGATCGAGCGCTCTGGGTGGACTTACGGCCACAGGACGGGGGCAGAGTCGGCAGGGAGGCCCCTCCGAGGCCCAGTGGGCCCTGCGCTGGCCCCGGCCGCAGACGCCCACCTGCTGCTGTGCTGGCTGCGGCCGCCGCCTGCTGGCCACAGAGAGCCCACGTGCGCCGGCCGCCAGGCCTGGGCATCTCCCCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCACCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCTGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCACCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCTGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGTGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCACCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCTGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGTGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCTGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGCGCCGGCCGCCAGGCCTGGGCATCTCCTCTCCTGCAGCGCCGCCTGCTGGCCACAGAGAACCCGCGTGTGCCGGCCGCCAGGCCTGGGCATCTCCCCGGGCCCTAGTTCCCCCCCTCACCTAAGGGGAGGGACTCCCGTCTTTCCATCCACCCCCTCCTTGCCTCTGCAGAGCTCCAGGGAAGGCTGGCACCCGCTCACTGCATTTAGACTCCATCAGGTTCAGACAGTGGGTCAGGGTACAAGGCTTCAGCGGCCAGGGATGTGGCCTCTAATTTGTAGAGAGAAAGAAGGACAGAGGCAAAGGTTTGGGCCCAGGGACTGGGCTCCGTTTCCAGAATCACTCTTGGAGCTGCTCTGCTGCCCCCTGCCCCATACACGTGATGGAGCAGAAAACGTGCTGTGTGAACCTGTGACTTCAGGGCCTGTTGACGTGGTCGTGCTTGCATACTCTCTGGACTGGACCTCACTGTGGGAACAACAAGATCAACAAGAGGAGCAAGAACAACATCAAGAGTCAGGGCCCGGGGGTCCTGACGGGTACAGGATGGGTACAGACCCACACAGGAATCCCAGAGTGTGTTCCACAGCAGGACACGCCTGCGCTGAAAGAGTGGGCAGAAAGGAGCTGACCTGGACCAAACCAATGCACAACTCCTACGTACTGATGGTGGTCTTACGTTTCCCTAAGTTTCTGCCGACTAAACTGTGCACACGTTCTCAGGACCTCCTGAAGCTGCGTCACAGGCGCTGA'
 
-finally:
-    print("Interação com o arquivo finalizado")
+coordenada  = 'c611297-611112'
+coordenada = [611112, 611297]
+segmentPath = os.path.join(here, "chromosome1HomoSapien/CDS32.fasta")
+sequencePath = os.path.join(here, "chromosome1HomoSapien/sequence.fasta")
+segment = getSec(segmentPath)
+sequence = getSec(sequencePath, True)
 
-"""if lista:  # Verifica se a lista não está vazia
-    print(lista)  # Imprime a primeira sequência
-else:
-    print("Nenhuma sequência válida encontrada.")"""
-
-## contar de dois em dois. coordenadas para o CDS2
-coordenadas = (961342,961552,961629,961750,961826,962047,962286,962471,962704,962917,
-               963109,963253,963337,963504,963920,964008,964107,964180,964349,964530,
-               964963,965191)
-
-
-newCO = []
-
-for i in range(0, len(coordenadas), 2):
-    newCO.append(coordenadas[i+1] - coordenadas[i])
-    
-    
-print("coordenadas:", newCO)
-
-newList = list()
-
-start = 0  # Indica o ponto inicial na sequência de nucleotídeos
-Ncoordenada = 0
-for seq_len in newCO:  # 'seq_len' é o tamanho do fragmento entre as coordenadas
-    cds = ""
-    end = start + seq_len  # Calcula a coordenada final do fragmento
-    for i in range(start, end):  # Itera de start até o ponto final
-        cds += lista[1][i]  # Adiciona os nucleotídeos à sublista
-    newList.append(cds)  # Adiciona a sublista à lista final
-    start = end  # Atualiza o início para a próxima iteração
-    
-    Ncoordenada += 1
-print(Ncoordenada)
-
-
+test = test[::-1]
+test = test[coordenada[0]:coordenada[1]]
+test = test[::-1]
+try:
+    if test in sequence:
+        print("yes")
+    else:
+        print("No")
+except Exception as e:
+    print(type(segment))
+    print(type(sequence))
+    print(e)

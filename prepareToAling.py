@@ -1,128 +1,66 @@
 import os
 import re
 import time
+
 class PrepareToAling:
     def __init__(self) -> None:
-        # Dicionário para armazenar a sequência
-        self.sequence = dict()
-        # Lista para armazenar as coordenadas
+        # se está no complemento
+        self.complement = None
+        # seguimentos 
+        self.segments = list()
+        # tamanho da sequência
+        self.length = 0
+        # coordenadas
         self.coordenadas = list()
-        #posições validas:
-        self.positions = list()
-        #segmentos já tratados
-        self.treatedSegments = list()
-        #identifica se os segmentos são complementares
-        self.complement = False
+        # segmentos tratados
+        self.finalSegments = list()
+        
 
     def getSequence(self, directory: str) -> None:
 
         try:
             with open(directory, "r") as file:
-                sequence_name = ""
-                sequence = ""
 
-               
+                sequence = []
                 for line in file:
-                    if not line.startswith('>'):  
-                        sequence += line.strip() 
-                        
+                    if not line.startswith(">"):
+                        sequence.append(line.strip())
                     else:
-                        if sequence_name and sequence: 
-                        
-                            self.sequence[sequence_name] = sequence
-                        sequence_name = line.strip().replace('>', '')  # Remove o '>' e o \n
-                        sequence = ""  # Reseta a sequência
+                        self.segments.append(line.strip().replace(">", ""))
 
-                # Adiciona a última sequência após o loop
-                if sequence_name and sequence:
-                    self.sequence[sequence_name] = sequence
-            
-            
-            
+
+                        
+                self.segments.append(''.join(sequence))
+                self.length = len(self.segments[1])
+
+                
+                       
         except FileNotFoundError as e:
-            raise e
-        except PermissionError as e:
-            raise e
+            print(e)
+            exit(1)
             
     def getCoordenadas(self) -> None:
-        # Inicializa a lista de coordenadas
-        coordenadas = []
+        header = self.segments[0]
     
-        # Itera sobre os cabeçalhos do dicionário de sequências
-        for header in self.sequence.keys():
-            # Ajusta a regex para capturar as coordenadas
-            padrao = r"([cC]?\d+)-(\d+)"
-    
-            # Usando re.findall para encontrar todas as correspondências
-            resultados = re.findall(padrao, header)
-    
-            if resultados:
-                # Adiciona as coordenadas encontradas na lista 'coordenadas'
-                coordenadas.extend([list(resultado) for resultado in resultados])
-    
-        # Armazena as coordenadas no atributo da classe
-        self.coordenadas = coordenadas
-
-        if self.coordenadas[0][0].startswith("c"):
-            self.complement = True
-        print("Coordenadas obtidas com sucesso!")
-    #define as posições corretas
-
-    def definePosition(self):
-
-
-        for i in range(len(self.coordenadas)):
-            start = self.coordenadas[i][0]
-            end = self.coordenadas[i][1]
-            
-            if start.startswith("c"):
+        padrao = r"([cC]?\d+)-(\d+)"
+        resultados = re.findall(padrao, header)
+        if resultados:
+            if resultados[0][0].startswith("c"):
+                    self.complement = True
+            for i in range(len(resultados)):
                 
-                start  = start .replace("c","")
-                
-            
-                
-                # start - end pois está invertido a ordem da sequencia.
-                coordenada = int(start) - int(end)
-                self.positions.append(coordenada)
-            else:
-
-                
-                
-                coordenada = int(end) - int(start)
-                self.positions.append(coordenada)
+                    
+                coordenada = [resultados[i][0], resultados[i][1]]
         
-    # trata o segmento, caso seja um complemento de sequência
+                self.coordenadas.append(coordenada)
+        
     
+    #reversa o complemento
     
-    # obtém os segmentos válidos para as sequências de acordo com as coordenadas
-    def defineSegments(self):
-        key = next(iter(self.sequence))
-        sequence = self.sequence[key]
+     #preprara o cabeçalho para cada seguimento
+    def prepareCab(self, coordenada):
 
-        
-        start = 0
-
-      
-        
-        for seq_len in self.positions:
-
-            cds = ""
-            end = start + seq_len
-            
-            
-            for i in range(start, end):
-                cds += sequence[i]
-
-            
-            self.treatedSegments.append(cds)
-            start = end
-
-    #preprara o cabeçalho para cada seguimento
-    def prepareCab(self, nCoordenada):
-        header = next(iter(self.sequence))
-        
-        
-        # Expressão regular para extrair os elementos desejados
+        header = self.segments[0]
         pattern = r'^(.*?):.*?(H.*)$'
 
         # Busca os padrões na string
@@ -131,18 +69,56 @@ class PrepareToAling:
         header = list(match.groups())
 
         
-        coordenada = f"{self.coordenadas[nCoordenada][0]}-{self.coordenadas[nCoordenada][1]}"
+        
+        
 
+        return f">{header[0]}:{('-'.join(coordenada))} {header[1]}"
+
+    
+    # obtém os segmentos válidos para as sequências de acordo com as coordenadas
+    def defineSegments(self):
        
-        return f">{header[0]}:{coordenada} {header[1]}"
+        if self.complement:
+            start = int(self.length) - 1
+
+            for index in range(len(self.coordenadas), 0, -1):
+                end =  int(self.coordenadas[index - 1][1]) -int(self.coordenadas[index - 1][0].replace("c", "")) 
+                segment = []
+
+                
+                for n in range(self.length - 1, start + end, -1):
+                    segment.append(self.segments[1][n])
+                
+                start += end -1
+                
+                self.finalSegments.append([self.prepareCab(self.coordenadas[index - 1]) ,''.join(segment)])
+
+            self.finalSegments.reverse()
+
+        else:
+            start = 0
+
+            for index in range(len(self.coordenadas)):
+                end = int(self.coordenadas[index][1]) - int(self.coordenadas[index][0])
+                segment = []
+                
+                for n in range(start, start + end):
+                    segment.append(self.segments[1][n])
+                
+                start += end 
+                
+                self.finalSegments.append([self.prepareCab(self.coordenadas[index]),''.join(segment)])
+                    
+  
+   
         
     # escreve os CDSs nos arquivos.fasta 
     def write(self, directory):
         try:
             with open(directory, "w") as file:
                 for nCoordenada in range(len(self.coordenadas)):
-                    header = self.prepareCab(nCoordenada)
-                    segment = self.treatedSegments[nCoordenada]
+                    header = self.finalSegments[nCoordenada][0]
+                    segment = self.finalSegments[nCoordenada][1]
                     
                     file.write(f"{header}\n{segment}\n")
             print("Inscrição realizada com sucesso!")
@@ -158,32 +134,30 @@ class PrepareToAling:
 ###################### executar #####################
 if __name__ == "__main__":
     start = time.time()
-    base_directory = os.getcwd()
+    here = os.path.dirname(os.path.abspath(__file__))
 
-    withComplement = 1
-    withoutComplement = 1
+    InComp = 1
+    NoComp = 1
 
-    os.makedirs("CDSsComplementarPreparadosParaAlinhar", exist_ok = True)
-    os.makedirs("CDSsPreparadosParaAlinhar", exist_ok = True)
-    for inter in range(1, 39):
-        directory = os.path.join(base_directory, f"chromosome1HomoSapien/CDS{inter}.fasta")
-        print(f"Preparando o arquivo: {directory}")
-        prepare = PrepareToAling()
-        prepare.getSequence(directory)
-        prepare.getCoordenadas()
-        prepare.definePosition()
-        prepare.defineSegments()
-        destine = ""
-        if prepare.complement == True:
-            destine = os.path.join(base_directory, "CDSsComplementarPreparadosParaAlinhar",f"cds{withComplement}.fasta")
-            withComplement += 1
-            
+    os.makedirs(os.path.join(here, "CDSsPreparadosC"), exist_ok=True)
+    os.makedirs(os.path.join(here, "CDSsPreparados"), exist_ok=True)
+
+    for iter in range(1, 39):
+        cds = PrepareToAling()
+        cds.getSequence(os.path.join(here, f"chromosome1HomoSapien/CDS{iter}.fasta"))
+        cds.getCoordenadas()
+        cds.defineSegments()
+
+        if cds.complement:
+            cds.write(os.path.join(here, f"CDSsPreparadosC/cds{NoComp}.fasta"))
+            NoComp += 1
         else:
-            destine = os.path.join(base_directory, "CDSsPreparadosParaAlinhar",f"cds{withoutComplement}.fasta")
-            withoutComplement += 1
-        
-        prepare.write(destine)
+            cds.write(os.path.join(here, f"CDSsPreparados/cds{InComp}.fasta"))
+            InComp += 1
+   
     
+
+
     end = time.time() - start
     print(f"Fim da execução\nprocedimento realizado em {end:.4f} segundos!")
 
