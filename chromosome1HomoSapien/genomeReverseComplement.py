@@ -20,7 +20,7 @@ def reversed(sequence: str)-> str:
 
     return ''.join(complementReverse[::-1])
 
-def getSeq(directory: str)-> dict:
+def getSeq(directory: str):
     
     with open(directory, "r") as file:
         sequenceName = ""

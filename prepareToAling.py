@@ -78,24 +78,22 @@ class PrepareToAling:
     
     # obtém os segmentos válidos para as sequências de acordo com as coordenadas
     def defineSegments(self):
-       
+        #['c586955', '586839']
+        #['c601577', '601398']
+        #['c608056', '607955']
+        #['c610750', '609083']        
         if self.complement:
-            start = int(self.length) - 1
+            start = 0
+            coo = 0
+            for index in self.coordenadas:
+                end = int(index[0].replace("c","")) - int(index[1])
 
-            for index in range(len(self.coordenadas), 0, -1):
-                
-                end =  int(self.coordenadas[index - 1][1] ) -int(self.coordenadas[index - 1][0].replace("c", "")) 
-                segment = []
+                segment = self.segments[1][start:end]
+                start = end + 1
 
-                
-                for n in range(self.length - 1, start + end, -1):
-                    segment.append(self.segments[1][n])
-                
-                start += end -1
-                
-                self.finalSegments.append([self.prepareCab(self.coordenadas[index - 1]) ,''.join(segment)])
-
-            self.finalSegments.reverse()
+                self.finalSegments.append([self.prepareCab(self.coordenadas[coo]), segment])
+                coo += 1 
+            
 
         else:
             start = 0
