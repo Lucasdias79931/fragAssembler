@@ -115,7 +115,7 @@ class PrepareToAling:
     # escreve os CDSs nos arquivos.fasta 
     def write(self, directory):
         try:
-            with open(directory, "w") as file:
+            with open(directory, "a") as file:
                 for nCoordenada in range(len(self.coordenadas)):
                     header = self.finalSegments[nCoordenada][0]
                     segment = self.finalSegments[nCoordenada][1]
@@ -139,7 +139,6 @@ if __name__ == "__main__":
     InComp = 1
     NoComp = 1
 
-    os.makedirs(os.path.join(here, "CDSsPreparadosC"), exist_ok=True)
     os.makedirs(os.path.join(here, "CDSsPreparados"), exist_ok=True)
 
     for iter in range(1, 39):
@@ -149,11 +148,11 @@ if __name__ == "__main__":
         cds.defineSegments()
 
         if cds.complement:
-            cds.write(os.path.join(here, f"CDSsPreparadosC/cds{NoComp}.fasta"))
-            NoComp += 1
+            cds.write(os.path.join(here, f"CDSsPreparados/cdsInComplement.fasta"))
+            
         else:
-            cds.write(os.path.join(here, f"CDSsPreparados/cds{InComp}.fasta"))
-            InComp += 1
+            cds.write(os.path.join(here, f"CDSsPreparados/cds.fasta"))
+           
    
     
 

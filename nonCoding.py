@@ -1,5 +1,6 @@
 import os
 import re
+import time
 
 class NonCoding:
     def __init__(self, complementar=None) -> None:
@@ -34,6 +35,7 @@ class NonCoding:
                 if header and sequence:
                     self.length = size
                     self.sequence.extend([header, ''.join(sequence)])
+                    #print("Sequência obtida com sucesso")
         except FileNotFoundError as e:
             print(e)
             exit(1)
@@ -56,7 +58,7 @@ class NonCoding:
                             self.cds.append([resultados[0][0].replace("c", ""), resultados[0][1]])
                 
         
-            
+            print("Coordenadas das regiões codificantes obtidas com sucesso")
 
         except FileNotFoundError as e:
             print(e)
@@ -65,19 +67,68 @@ class NonCoding:
             print(f"Erro inesperado: {e}")
             exit(1)
 
-    def defineNonCds(self):
+    #verifica se os cds estao ordenados
+    def ordenado(self):
         if not self.complementar:
-            start = 0
-
-            for index in range(len(self.cds)):
-                end = int(self.cds[index][0]) - 1
-
-                self.nonCds.append([start, end])
-                start = end + 1
+            for inter in range(len(self.cds) - 1):
+                if int(self.cds[inter][1]) > int(self.cds[inter + 1][1]):
+                    self.cds[inter], self.cds[inter + 1] = self.cds[inter + 1], self.cds[inter]
             
-            self.nonCds.append([start, self.length])
         else:
-            start = self.length - 1
+            for inter in range(len(self.cds) - 1):
+                if int(self.cds[inter][1]) < int(self.cds[inter + 1][1]):
+                    self.cds[inter], self.cds[inter + 1] = self.cds[inter + 1], self.cds[inter]
+
+    def defineNonCds(self):
+        self.ordenado()
+
+        try:
+            if not self.complementar:
+                start = 0
+
+                for index in range(len(self.cds)):
+                    end = int(self.cds[index][0]) - 1
+
+                    self.nonCds.append([start, end])
+                    start = end + 1
+                
+                self.nonCds.append([start, self.length])
+            else:
+                start = self.length - 1
+
+                for index in range(len(self.cds)):
+                    end = int(self.cds[index][1]) - 1
+
+                    self.nonCds.append([start, end])
+                    start = end - 1
+                
+                self.nonCds.append([start, -1])
+            print("Coordenadas das regiões não codificantes obtidas com sucesso")
+
+        except Exception as e:
+            print(f"Erro inesperado: {e}")
+            exit(1)
+        
+    # prepara o cabeçalho de cada segmento
+    def prepareCab(self, coordenada):
+
+        header = self.sequence[0]
+        pattern = r'^(.*?):.*?(H.*)$'
+
+        # Busca os padrões na string
+        match = re.search(pattern, header)
+        
+        header = list(match.groups())
+
+        
+        if self.complementar:
+            aux = 'c'
+            aux += coordenada[0]
+            coordenada[0] = aux
+        
+
+        return f">{header[0]}:{('-'.join(coordenada))} {header[1]}"
+
 
                 
 
@@ -88,12 +139,32 @@ class NonCoding:
 
 
 if __name__ == "__main__":
+    start = time.time()
     here = os.path.dirname(os.path.abspath(__file__))
 
     sequencePath = os.path.join(here, "chromosome1HomoSapien/sequence.fasta")
     complementPath = os.path.join(here, "chromosome1HomoSapien/reversedSequence.fasta")
 
-    test = NonCoding()
-    test.getCoordenadas(os.path.join(here, "CDSsPreparadosC/cds1.fasta"))
-    print(test.cds)
+    
+    noCodingNoComplement = NonCoding(False)
+    noCodingInComplement = NonCoding(True)
+
+
+
+    print("Iniciando procedimento com a a fita no sentido normal")
+    noCodingNoComplement.getSequence(sequencePath)
+    noCodingNoComplement.getCoordenadas(os.path.join(here,"CDSsPreparados/cds.fasta"))
+    noCodingNoComplement.defineNonCds()
+
+
+
+
+
+
+
+
+
+
+
+
     
