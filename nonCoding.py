@@ -94,17 +94,17 @@ class NonCoding:
                     self.nonCds.append([start, end])
                     start = end + 1
                 
-                self.nonCds.append([start, self.length])
+                self.nonCds.append([start, self.length - 1])
             else:
                 start = self.length - 1
 
                 for index in range(len(self.cds)):
-                    end = int(self.cds[index][1]) - 1
+                    end = - int(self.cds[index][1])
 
                     self.nonCds.append([start, end])
                     start = end - 1
                 
-                self.nonCds.append([start, -1])
+                self.nonCds.append([start, 0])
             print("Coordenadas das regiões não codificantes obtidas com sucesso")
 
         except Exception as e:
@@ -145,11 +145,12 @@ class NonCoding:
                     header = self.prepareCab(index)
                     
                     if segment:
+                        print(header, "adicionado")
                         self.finalSegments.append([header, ''.join(segment)])
                     else:
-                        
+                        print(header, "nao adicionado")
                         print("Segmento vazio")
-                        exit(1)
+                    
             else:
                 for index in self.nonCds:
 
@@ -160,7 +161,7 @@ class NonCoding:
                         self.finalSegments.append([header, ''.join(segment)])
                     else:
                         print("Segmento vazio")
-                        exit(1)
+                        
 
         except Exception as e:
             print("erro em defineNonCds")
