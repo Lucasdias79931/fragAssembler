@@ -59,6 +59,7 @@ class PrepareToAling:
     
      #preprara o cabeçalho para cada seguimento
     def prepareCab(self, coordenada):
+        
 
         header = self.segments[0]
         pattern = r'^(.*?):.*?(H.*)$'
@@ -82,7 +83,8 @@ class PrepareToAling:
             start = int(self.length) - 1
 
             for index in range(len(self.coordenadas), 0, -1):
-                end =  int(self.coordenadas[index - 1][1]) -int(self.coordenadas[index - 1][0].replace("c", "")) 
+                
+                end =  int(self.coordenadas[index - 1][1] ) -int(self.coordenadas[index - 1][0].replace("c", "")) 
                 segment = []
 
                 
@@ -105,7 +107,7 @@ class PrepareToAling:
                 for n in range(start, start + end):
                     segment.append(self.segments[1][n])
                 
-                start += end 
+                start += end + 1
                 
                 self.finalSegments.append([self.prepareCab(self.coordenadas[index]),''.join(segment)])
                     

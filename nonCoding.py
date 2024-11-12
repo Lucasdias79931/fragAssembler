@@ -14,6 +14,8 @@ class NonCoding:
         self.cds = list()
         # Define as coordenadas das regiões não codificantes
         self.nonCds = list()
+        # segmentos não codificantes
+        self.finalSegments = list()
 
 
     # obter sequência
@@ -79,7 +81,7 @@ class NonCoding:
                 if int(self.cds[inter][1]) < int(self.cds[inter + 1][1]):
                     self.cds[inter], self.cds[inter + 1] = self.cds[inter + 1], self.cds[inter]
 
-    def defineNonCds(self):
+    def defineNonCdsCoordinate(self):
         self.ordenado()
 
         try:
@@ -111,26 +113,72 @@ class NonCoding:
         
     # prepara o cabeçalho de cada segmento
     def prepareCab(self, coordenada):
+        try:
+            header = self.sequence[0]
+            pattern = r'^(.*?) (.*)$'
+            match = re.search(pattern, header)
 
-        header = self.sequence[0]
-        pattern = r'^(.*?):.*?(H.*)$'
-
-        # Busca os padrões na string
-        match = re.search(pattern, header)
-        
-        header = list(match.groups())
-
-        
-        if self.complementar:
-            aux = 'c'
-            aux += coordenada[0]
-            coordenada[0] = aux
-        
-
-        return f">{header[0]}:{('-'.join(coordenada))} {header[1]}"
-
-
+            if match:
+                header = list(match.groups())
                 
+                if self.complementar:
+                    coordenada[0] = 'c' + str(coordenada[0])
+
+                # Converte os elementos de coordenada para strings antes de usar join
+                coordenada_str = list(map(str, coordenada))
+                return f">{header[0]}:{('-'.join(coordenada_str))} {header[1]}"
+            else:
+                raise ValueError("Formato do cabeçalho inválido.")
+        except Exception as e:
+            print("erro em prepareCab")
+            print(f"Erro inesperado: {e}")
+            exit(1)
+
+
+    def defineNonCds(self):
+        try:
+            if not self.complementar:
+                for index in self.nonCds:
+                    
+                    segment = self.sequence[1][index[0]:index[1]]
+                    
+                    header = self.prepareCab(index)
+                    
+                    if segment:
+                        self.finalSegments.append([header, ''.join(segment)])
+                    else:
+                        
+                        print("Segmento vazio")
+                        exit(1)
+            else:
+                for index in self.nonCds:
+
+                    segment = self.sequence[1][-index[0] + 1:-index[1] + 1]
+                    header = self.prepareCab(index)
+                    
+                    if segment:
+                        self.finalSegments.append([header, ''.join(segment)])
+                    else:
+                        print("Segmento vazio")
+                        exit(1)
+
+        except Exception as e:
+            print("erro em defineNonCds")
+            print(f"Erro inesperado: {e}")
+            exit(1)
+    
+    # escreve os segmentos
+    def write(self, directory):
+        try:
+            with open(directory, "w") as file:
+                for segment in self.finalSegments:
+                    
+                    file.write(f"{segment[0]}\n{segment[1]}\n")
+            print("Inscrição realizada com sucesso!")
+
+        except FileExistsError as e:   
+            print(e)    
+
 
 
 
@@ -145,7 +193,7 @@ if __name__ == "__main__":
     sequencePath = os.path.join(here, "chromosome1HomoSapien/sequence.fasta")
     complementPath = os.path.join(here, "chromosome1HomoSapien/reversedSequence.fasta")
 
-    
+    os.makedirs(os.path.join(here, "NonCds"), exist_ok=True)
     noCodingNoComplement = NonCoding(False)
     noCodingInComplement = NonCoding(True)
 
@@ -154,10 +202,25 @@ if __name__ == "__main__":
     print("Iniciando procedimento com a a fita no sentido normal")
     noCodingNoComplement.getSequence(sequencePath)
     noCodingNoComplement.getCoordenadas(os.path.join(here,"CDSsPreparados/cds.fasta"))
+    noCodingNoComplement.defineNonCdsCoordinate()
     noCodingNoComplement.defineNonCds()
+    print("Gravando os segmentos não codificantes da fita no sentido normal")
+    noCodingNoComplement.write(os.path.join(here, "NonCds/nonCodingNoComplement.fasta"))
+    print("procedimento com a a fita no sentido normal concluido")
 
 
+    print("Iniciando procedimento com a a fita no sentido complementar")
+    noCodingInComplement.getSequence(complementPath)
+    noCodingInComplement.getCoordenadas(os.path.join(here,"CDSsPreparados/cdsInComplement.fasta"))
+    noCodingInComplement.defineNonCdsCoordinate()
+    noCodingInComplement.defineNonCds()
+    print("Gravando os segmentos não codificantes da fita no sentido complementar")
+    noCodingInComplement.write(os.path.join(here, "NonCds/nonCodingInComplement.fasta"))
+    print("procedimento com a a fita no sentido complementar concluido")
 
+    end = time.time() - start
+    print("Interação com o arquivo finalizado com sucesso")
+    print(f"Tempo de execução: {end:.2f} segundos")
 
 
 
