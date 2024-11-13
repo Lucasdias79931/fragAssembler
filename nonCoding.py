@@ -58,8 +58,43 @@ class NonCoding:
                         if len(resultados) > 0:
 
                             self.cds.append([resultados[0][0].replace("c", ""), resultados[0][1]])
-                
-        
+           
+            
+            #ordena as coordenadas, caso estiverem desordenadas
+            if not self.complementar:
+                for i in range(len(self.cds) - 1):
+                    for j in range(i + 1, len(self.cds)):
+                    
+                        if self.cds[i][1] > self.cds[j][0]:
+                           
+                            aux = self.cds[i]
+                            self.cds[i] = self.cds[j]
+                            self.cds[j] = aux
+            else:
+                for i in range(len(self.cds) - 1):
+                    for j in range(i + 1, len(self.cds)):
+                        if self.cds[i][1] < self.cds[j][0]:
+                            self.cds[i], self.cds[j] = self.cds[j], self.cds[i]
+            
+            for i in self.cds:
+                print(i)
+            exit(1)
+            print("testando getCoordenadas")
+            
+            for index in range(len(self.cds) - 1):
+                if self.complementar:
+                    if self.cds[index][1] < self.cds[index + 1][0]:
+                        print(self.cds[index], self.cds[index + 1])
+                        print("Coordenada na fita complementar inválida ")
+                        exit(1)
+                else:
+                    if self.cds[index][1] > self.cds[index + 1][0]:
+                        
+                        print(self.cds[index], self.cds[index + 1])
+                        print("Coordenada na fita normal inválida")
+                        exit(1)
+            print("Coordenadas verificadas com sucesso. function getCoordenadas ok") 
+            
             print("Coordenadas das regiões codificantes obtidas com sucesso")
 
         except FileNotFoundError as e:
@@ -79,11 +114,12 @@ class NonCoding:
             if not self.complementar:
                 start = 0
                 
-                for index in self.cds:
-                    end = int(index[0]) - 2
-                    
+                for index in range(len(self.cds)):
+                    end = int(self.cds[index][0]) - 2
+
+                   
                     self.nonCds.append([start, end])
-                    start = int(index[1]) 
+                    start = end 
                 
                 self.nonCds.append([start, self.length])
             else:
@@ -96,8 +132,26 @@ class NonCoding:
                     start = - int(self.cds[index - 1][0]) - 1
                 
                 self.nonCds.append([start, 0])
+            
+            print("testando defineNonCdsCoordinate")
+            for index in range(len(self.nonCds) - 1):
+                if self.complementar:
+                    if self.nonCds[index][1] < self.nonCds[index + 1][0]:
+                        print(index)
+                        print("Coordenada na fita complementar inválida ")
+                        exit(1)
+                else:
+                    if self.nonCds[index][1] > self.nonCds[index + 1][0]:
+                        print(index)
+                        print("Coordenada na fita normal inválida")
+                        exit(1)
+            print("Coordenadas verificadas com sucesso. function defineNonCdsCoordinate ok") 
+            
+            
             print("Coordenadas das regiões não codificantes obtidas com sucesso")
 
+            
+            
         except Exception as e:
             print(f"Erro inesperado: {e}")
             exit(1)
@@ -128,17 +182,30 @@ class NonCoding:
 
     def defineNonCds(self):
         try:
+            
+        
             if not self.complementar:
-                for index in self.nonCds:
+                print("testando defineNonCds notComplement")
+                for index in range(len(self.nonCds) - 1):
                     
-                    segment = self.sequence[1][index[0]:index[1]]
+                    if self.nonCds[index][1] < self.nonCds[index + 1][0]:
+                        print(index)
+                        print("Coordenada na fita complementar inválida ")
+                        exit(1)
+                print("Coordenadas verificadas com sucesso. function defineNonCds ok")
+                
+                for index in range(len(self.nonCds)):
+                    segment = self.sequence[1][int(self.nonCds[index][0]):int(self.nonCds[index][1])]
                     
-                    header = self.prepareCab(index)
+                    header = self.prepareCab(self.nonCds[index])
                     
                     if segment:
                         print(header, "adicionado")
+                        
                         self.finalSegments.append([header, ''.join(segment)])
                     else:
+
+                        
                         print(header, "nao adicionado")
                         print("Segmento vazio")
                     
