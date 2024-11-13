@@ -70,39 +70,30 @@ class NonCoding:
             exit(1)
 
     #verifica se os cds estao ordenados
-    def ordenado(self):
-        if not self.complementar:
-            for inter in range(len(self.cds) - 1):
-                if int(self.cds[inter][1]) > int(self.cds[inter + 1][1]):
-                    self.cds[inter], self.cds[inter + 1] = self.cds[inter + 1], self.cds[inter]
-            
-        else:
-            for inter in range(len(self.cds) - 1):
-                if int(self.cds[inter][1]) < int(self.cds[inter + 1][1]):
-                    self.cds[inter], self.cds[inter + 1] = self.cds[inter + 1], self.cds[inter]
+   
 
     def defineNonCdsCoordinate(self):
-        self.ordenado()
+        
 
         try:
             if not self.complementar:
                 start = 0
-
-                for index in range(len(self.cds)):
-                    end = int(self.cds[index][0]) - 1
-
-                    self.nonCds.append([start, end])
-                    start = end + 1
                 
-                self.nonCds.append([start, self.length - 1])
-            else:
-                start = self.length - 1
-
-                for index in range(len(self.cds)):
-                    end = - int(self.cds[index][1])
-
+                for index in self.cds:
+                    end = int(index[0]) - 2
+                    
                     self.nonCds.append([start, end])
-                    start = end - 1
+                    start = int(index[1]) 
+                
+                self.nonCds.append([start, self.length])
+            else:
+                start = -1
+
+                for index in range(len(self.cds), 1, -1):
+                    end = - int(self.cds[index -1][1])
+                    
+                    self.nonCds.append([start, end])
+                    start = - int(self.cds[index - 1][0]) - 1
                 
                 self.nonCds.append([start, 0])
             print("Coordenadas das regiões não codificantes obtidas com sucesso")
@@ -154,7 +145,7 @@ class NonCoding:
             else:
                 for index in self.nonCds:
 
-                    segment = self.sequence[1][-index[0] + 1:-index[1] + 1]
+                    segment = self.sequence[1][index[1]:index[0]]
                     header = self.prepareCab(index)
                     
                     if segment:
@@ -203,12 +194,14 @@ if __name__ == "__main__":
     print("Iniciando procedimento com a a fita no sentido normal")
     noCodingNoComplement.getSequence(sequencePath)
     noCodingNoComplement.getCoordenadas(os.path.join(here,"CDSsPreparados/cds.fasta"))
+    
     noCodingNoComplement.defineNonCdsCoordinate()
     noCodingNoComplement.defineNonCds()
     print("Gravando os segmentos não codificantes da fita no sentido normal")
     noCodingNoComplement.write(os.path.join(here, "NonCds/nonCodingNoComplement.fasta"))
     print("procedimento com a a fita no sentido normal concluido")
 
+    exit(1)
 
     print("Iniciando procedimento com a a fita no sentido complementar")
     noCodingInComplement.getSequence(complementPath)
