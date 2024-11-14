@@ -80,25 +80,14 @@ class PrepareCDSs:
     def defineSegments(self):
           
         if self.complement:
-            start = 0
-
-            for index in range(len(self.coordenadas)):
-                end = int(self.coordenadas[index][0].replace("c", "")) - int(self.coordenadas[index][1])
-                segment = []
-                
-                for n in range(start, start + end):
-                    segment.append(self.segments[1][n])
-                
-                start += end + 1
-                
-                self.finalSegments.append([self.prepareCab(self.coordenadas[index]),''.join(segment)])
-            
+            ...
 
         else:
             start = 0
-
+          
             for index in range(len(self.coordenadas)):
                 end = int(self.coordenadas[index][1]) - int(self.coordenadas[index][0])
+
                 segment = []
                 
                 for n in range(start, start + end):
@@ -107,6 +96,15 @@ class PrepareCDSs:
                 start += end + 1
                 
                 self.finalSegments.append([self.prepareCab(self.coordenadas[index]),''.join(segment)])
+
+
+
+
+                
+                
+                
+
+
                     
   
    
@@ -142,8 +140,13 @@ if __name__ == "__main__":
 
     for iter in range(1, 39):
         cds = PrepareCDSs()
+    
         cds.getSequence(os.path.join(here, f"chromosome1HomoSapien/CDS{iter}.fasta"))
         cds.getCoordenadas()
+
+        # se estiver no complemento, pula. por enquanto só estou trabalhando com os CDSs normais
+        if cds.complement:
+            continue
         cds.defineSegments()
 
         if cds.complement:

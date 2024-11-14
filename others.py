@@ -3,7 +3,7 @@ import re
 
 here = os.path.dirname(os.path.abspath(__file__))
 
-headersPath = os.path.join(here, "CDSsPreparados/cdsInComplement.fasta")
+headersPath = os.path.join(here, "CDSsPreparados/cds.fasta")
 
 headers = list()
 
@@ -41,3 +41,9 @@ for coordenada in coordenadas:
         exit(1)
     else:
         print("coordenada válida")
+
+for i in range(len(coordenadas) - 1):
+    if coordenadas[i][1] > coordenadas[i][0]:
+        print(f"Coordenada invalida: {coordenadas[i] } {coordenadas[i + 1]}")
+        print(coordenadas[i +1][0] - coordenadas[i][1])
+        exit(1)
