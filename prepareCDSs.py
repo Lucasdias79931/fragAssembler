@@ -127,20 +127,37 @@ class PrepareCDSs:
 ###################### executar #####################
 if __name__ == "__main__":
     start = time.time()
+
+    print("Iniciando procedimento para preparar os CDSs")
     here = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(os.path.join(here, "CDSsPreparados"), exist_ok=True)
+
     cdsDestinePath = os.path.join(here, "CDSsPreparados","cds.fasta")
     cdsCDestinePath = os.path.join(here, "CDSsPreparados","cdsInC.fasta")
     prepCds = PrepareCDSs()
+
+    print("colhendo sequência na fita normal")
     prepCds.sequence = prepCds.getSequence(os.path.join(here, "chromosome1HomoSapien/sequence.fasta"))
+
+    print("sequência obtida com sucesso")
+    print("colhendo sequência na fita complementar")
     prepCds.complement  = prepCds.getSequence(os.path.join(here, "chromosome1HomoSapien/reversedSequence.fasta"))
 
+    print("sequência obtida com sucesso")
+
+    print("colhendo CDSs na fita normal e complementar")
     for i in range(1, 39):
         prepCds.getSequence(os.path.join(here, f"chromosome1HomoSapien/CDS{i}.fasta"), True)
-    
+    print("CDSs obtidos com sucesso")
+
+    print("preparando os CDSs")
     prepCds.getCoordenadas()
-    prepCds.defineSegments()    
+    prepCds.defineSegments() 
+    print("preparação realizada com sucesso")
+
+    print("escrevendo os CDSs")   
     prepCds.write(cdsDestinePath, cdsCDestinePath)
+    print("escrição realizada com sucesso")
 
     
 
