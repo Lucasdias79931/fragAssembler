@@ -3,41 +3,62 @@ import re
 import time
 
 class NonCoding:
-    def __init__(self, complementar=None) -> None:
-        # complementar ou não
-        self.complementar = complementar
-        # sequência para comparar
+    def __init__(self) -> None:
+        #sequência na fita normal
         self.sequence = list()
-        # size of sequence
-        self.length = 0
-        # colhe as regiões codificantes
-        self.cds = list()
-        # Define as coordenadas das regiões não codificantes
-        self.nonCds = list()
-        # segmentos não codificantes
-        self.finalSegments = list()
+        #sequência na fita complementar
+        self.complement = list()
+        #headers dos cds na fita normal
+        self.CDSsHeaders = list()
+        #headers dos cds na fita complementar
+        self.complementsCDSsHeaders = list()
+        #coordenadas dos cds na fita normal
+        self.CDSsCoordenadas = list()
+        #coordenadas dos cds na fita complementar
+        self.complementsCDSsCoordenadas = list()
+        
 
 
-    # obter sequência
 
-    def getSequence(self, directory: str) -> None:
+
+
+
+    # obter sequência e complemento da sequência
+
+    def getSequence(self, directory: str):
         try:
             with open(directory, "r") as file:
-                size = 0
+                
                 sequence = []
                 header = "" 
                 for line in file:
                     if not line.startswith(">"):
                         sequence.append(line.strip())
-                        size += 1
                         
+                   
                     else:
                         header = line.strip().replace(">", "")
                         sequence = []
+
                 if header and sequence:
-                    self.length = size
-                    self.sequence.extend([header, ''.join(sequence)])
-                    #print("Sequência obtida com sucesso")
+                    return [header, ''.join(sequence)]
+                
+        except FileNotFoundError as e:
+            print(e)
+            exit(1)
+        except Exception as e:
+            print(f"Erro inesperado: {e}")
+            exit(1)
+    # Obter os cds
+    def getCDSs(self, directory: str) -> None:
+        try:
+            with open(directory, "r") as file:
+                cds = []
+                for line in file:
+                    if line.startswith(">"):
+                        cds.append(line.strip())
+            
+            return cds
         except FileNotFoundError as e:
             print(e)
             exit(1)
@@ -73,44 +94,7 @@ class NonCoding:
         
 
         try:
-            if not self.complementar:
-                start = 0
-                
-                for index in range(len(self.cds)):
-                    end = int(self.cds[index][0]) - 2
-
-                   
-                    self.nonCds.append([start, end])
-                    start = end 
-                
-                self.nonCds.append([start, self.length])
-            else:
-                start = -1
-
-                for index in range(len(self.cds), 1, -1):
-                    end = - int(self.cds[index -1][1])
-                    
-                    self.nonCds.append([start, end])
-                    start = - int(self.cds[index - 1][0]) - 1
-                
-                self.nonCds.append([start, 0])
-            
-            print("testando defineNonCdsCoordinate")
-            for index in range(len(self.nonCds) - 1):
-                if self.complementar:
-                    if self.nonCds[index][1] < self.nonCds[index + 1][0]:
-                        print(index)
-                        print("Coordenada na fita complementar inválida ")
-                        exit(1)
-                else:
-                    if self.nonCds[index][1] > self.nonCds[index + 1][0]:
-                        print(index)
-                        print("Coordenada na fita normal inválida")
-                        exit(1)
-            print("Coordenadas verificadas com sucesso. function defineNonCdsCoordinate ok") 
-            
-            print(self.nonCds)
-            print("Coordenadas das regiões não codificantes obtidas com sucesso")
+            ...
 
             
             
@@ -210,37 +194,32 @@ class NonCoding:
 
 if __name__ == "__main__":
     start = time.time()
+    print("Iniciando o processo para extrair os nonCds")
     here = os.path.dirname(os.path.abspath(__file__))
-
+    
     sequencePath = os.path.join(here, "chromosome1HomoSapien/sequence.fasta")
     complementPath = os.path.join(here, "chromosome1HomoSapien/reversedSequence.fasta")
+    CDSsPath = os.path.join(here, "CDSsPreparados/cds.fasta")
+    CDSsComplementPath = os.path.join(here, "CDSsPreparados/cdsInC.fasta")
 
     os.makedirs(os.path.join(here, "NonCds"), exist_ok=True)
-    noCodingNoComplement = NonCoding(False)
-    noCodingInComplement = NonCoding(True)
-
-
-
-    print("Iniciando procedimento com a a fita no sentido normal")
-    noCodingNoComplement.getSequence(sequencePath)
-    noCodingNoComplement.getCoordenadas(os.path.join(here,"CDSsPreparados/cds.fasta"))
     
-    noCodingNoComplement.defineNonCdsCoordinate()
-    noCodingNoComplement.defineNonCds()
-    print("Gravando os segmentos não codificantes da fita no sentido normal")
-    noCodingNoComplement.write(os.path.join(here, "NonCds/nonCodingNoComplement.fasta"))
-    print("procedimento com a a fita no sentido normal concluido")
+    nonCoding = NonCoding()
+    print("colhendo sequência na fita normal")
+    nonCoding.sequence = nonCoding.getSequence(sequencePath)
+    print("sequência obtida com sucesso")
+    print("colhendo sequência na fita complementar")
+    nonCoding.complement = nonCoding.getSequence(complementPath)
+    print("sequência obtida com sucesso")
 
-    exit(1)
+    print("colhendo CDSs na fita normal")
+    nonCoding.CDSsHeaders = nonCoding.getCDSs(CDSsPath)
+    print("CDSs obtidos com sucesso")
+    print("colhendo CDSs na fita complementar")
+    nonCoding.complementsCDSsHeaders = nonCoding.getCDSs(CDSsComplementPath)
+    print("CDSs na fita complementar obtidos com sucesso")
+    
 
-    print("Iniciando procedimento com a a fita no sentido complementar")
-    noCodingInComplement.getSequence(complementPath)
-    noCodingInComplement.getCoordenadas(os.path.join(here,"CDSsPreparados/cdsInComplement.fasta"))
-    noCodingInComplement.defineNonCdsCoordinate()
-    noCodingInComplement.defineNonCds()
-    print("Gravando os segmentos não codificantes da fita no sentido complementar")
-    noCodingInComplement.write(os.path.join(here, "NonCds/nonCodingInComplement.fasta"))
-    print("procedimento com a a fita no sentido complementar concluido")
 
     end = time.time() - start
     print("Interação com o arquivo finalizado com sucesso")
