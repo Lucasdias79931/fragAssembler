@@ -139,7 +139,7 @@ if __name__ == "__main__":
         prepCds.getSequence(os.path.join(here, f"chromosome1HomoSapien/CDS{i}.fasta"), True)
     
     prepCds.getCoordenadas()
-    prepCds.defineSegments()
+    prepCds.defineSegments()    
     prepCds.write(cdsDestinePath, cdsCDestinePath)
 
     
