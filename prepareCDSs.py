@@ -4,65 +4,68 @@ import time
 
 class PrepareCDSs:
     def __init__(self) -> None:
-        # se está no complemento
-        self.complement = None
+        #sequence 
+        self.sequence = list()
+        #complementar
+        self.complement = list()
         # seguimentos 
-        self.segments = list()
-        # tamanho da sequência
-        self.length = 0
+        self.segmentsHeaders = list()
         # coordenadas
         self.coordenadas = list()
         # segmentos tratados
         self.finalSegments = list()
         
 
-    def getSequence(self, directory: str) -> None:
+    def getSequence(self, directory: str, segment = False) -> None:
 
         try:
             with open(directory, "r") as file:
-
+                header = ''
                 sequence = []
                 for line in file:
                     if not line.startswith(">"):
                         sequence.append(line.strip())
                     else:
-                        self.segments.append(line.strip().replace(">", ""))
+                        if segment:
+                            self.segmentsHeaders.append(line.strip().replace(">", ""))
+                            break
 
+                        header = line.strip().replace(">", "")
+                        sequence = []
 
+                if header and sequence:
+                    return [header, ''.join(sequence)]
                         
-                self.segments.append(''.join(sequence))
-                self.length = len(self.segments[1])
-
-                
                        
         except FileNotFoundError as e:
             print(e)
             exit(1)
             
-    def getCoordenadas(self) -> None:
-        header = self.segments[0]
-    
-        padrao = r"([cC]?\d+)-(\d+)"
-        resultados = re.findall(padrao, header)
-        if resultados:
-            if resultados[0][0].startswith("c"):
-                    self.complement = True
-            for i in range(len(resultados)):
+    def getCoordenadas(self,) -> None:
+        
+        for header in self.segmentsHeaders:
+            padrao = r"([cC]?\d+)-(\d+)"
+            resultados = re.findall(padrao, header)
+            if resultados:
+
                 
+                
+                for i in range(len(resultados)):
                     
-                coordenada = [resultados[i][0], resultados[i][1]]
+                        
+                    coordenada = [resultados[i][0], resultados[i][1]]
+            
+                    self.coordenadas.append(coordenada)
         
-                self.coordenadas.append(coordenada)
         
     
-    #reversa o complemento
     
-     #preprara o cabeçalho para cada seguimento
+    #preprara o cabeçalho para cada seguimento
     def prepareCab(self, coordenada):
         
 
-        header = self.segments[0]
-        pattern = r'^(.*?):.*?(H.*)$'
+        header = self.sequence[0]
+        pattern = r'^(.*?) (.*)$'
 
         # Busca os padrões na string
         match = re.search(pattern, header)
@@ -78,84 +81,67 @@ class PrepareCDSs:
     
     # obtém os segmentos válidos para as sequências de acordo com as coordenadas
     def defineSegments(self):
-          
-        if self.complement:
-            ...
-
-        else:
-            start = 0
-          
-            for index in range(len(self.coordenadas)):
-                end = int(self.coordenadas[index][1]) - int(self.coordenadas[index][0])
-
-                segment = []
-                
-                for n in range(start, start + end):
-                    segment.append(self.segments[1][n])
-                
-                start += end + 1
-                
-                self.finalSegments.append([self.prepareCab(self.coordenadas[index]),''.join(segment)])
-
-
-
-
-                
-                
-                
-
-
-                    
-  
-   
         
-    # escreve os CDSs nos arquivos.fasta 
-    def write(self, directory):
+
         try:
-            with open(directory, "a") as file:
-                for nCoordenada in range(len(self.coordenadas)):
-                    header = self.finalSegments[nCoordenada][0]
-                    segment = self.finalSegments[nCoordenada][1]
-                    
-                    file.write(f"{header}\n{segment}\n")
+            self.complement[1] = self.complement[1][::-1]
+
+            for coordenada in self.coordenadas:
+                if coordenada[0].startswith('c'):
+                    seg = self.complement[1][int(coordenada[1]):int(coordenada[0].replace('c', ''))]
+                    segment = [self.prepareCab(coordenada), seg[::-1]]
+                    self.finalSegments.append(segment)
+                else:
+                    segment = [self.prepareCab(coordenada), self.sequence[1][int(coordenada[0]):int(coordenada[1])]]
+                    self.finalSegments.append(segment)
+
+        except Exception as e:
+            print(f"Error:{e}")
+            print("erro em defineSegments")
+            exit(1)
+
+
+    # escreve os CDSs nos arquivos.fasta 
+    def write(self, cdsPath, cdsCPat):
+        try:
+            with open(cdsPath, "a") as file:
+                with open(cdsCPat, "a") as fileC:
+                    for segment in range(len(self.coordenadas)):
+                        if self.coordenadas[segment][0].startswith('c'):
+                            fileC.write(f"{self.finalSegments[segment][0]}\n{self.finalSegments[segment][1]}\n")
+                        else:
+                            file.write(f"{self.finalSegments[segment][0]}\n{self.finalSegments[segment][1]}\n")
+
             print("Inscrição realizada com sucesso!")
 
-        except FileExistsError as e:   
-            print(e)    
+        
+        except Exception as e:
+            print(f"Error:{e}")
+            print("erro em write")
 
            
         
 
-
+ 
 
 ###################### executar #####################
 if __name__ == "__main__":
     start = time.time()
     here = os.path.dirname(os.path.abspath(__file__))
-
-    InComp = 1
-    NoComp = 1
-
     os.makedirs(os.path.join(here, "CDSsPreparados"), exist_ok=True)
+    cdsDestinePath = os.path.join(here, "CDSsPreparados","cds.fasta")
+    cdsCDestinePath = os.path.join(here, "CDSsPreparados","cdsInC.fasta")
+    prepCds = PrepareCDSs()
+    prepCds.sequence = prepCds.getSequence(os.path.join(here, "chromosome1HomoSapien/sequence.fasta"))
+    prepCds.complement  = prepCds.getSequence(os.path.join(here, "chromosome1HomoSapien/reversedSequence.fasta"))
 
-    for iter in range(1, 39):
-        cds = PrepareCDSs()
+    for i in range(1, 39):
+        prepCds.getSequence(os.path.join(here, f"chromosome1HomoSapien/CDS{i}.fasta"), True)
     
-        cds.getSequence(os.path.join(here, f"chromosome1HomoSapien/CDS{iter}.fasta"))
-        cds.getCoordenadas()
+    prepCds.getCoordenadas()
+    prepCds.defineSegments()
+    prepCds.write(cdsDestinePath, cdsCDestinePath)
 
-        # se estiver no complemento, pula. por enquanto só estou trabalhando com os CDSs normais
-        if cds.complement:
-            continue
-        cds.defineSegments()
-
-        if cds.complement:
-            cds.write(os.path.join(here, f"CDSsPreparados/cdsInComplement.fasta"))
-            
-        else:
-            cds.write(os.path.join(here, f"CDSsPreparados/cds.fasta"))
-           
-   
     
 
 
