@@ -1,21 +1,23 @@
 import os
 import re
 import time
-
 class NonCoding:
     def __init__(self) -> None:
         #sequência na fita normal
         self.sequence = list()
         #sequência na fita complementar
         self.complement = list()
-        #headers dos cds na fita normal
-        self.CDSsHeaders = list()
-        #headers dos cds na fita complementar
-        self.complementsCDSsHeaders = list()
         #coordenadas dos cds na fita normal
         self.CDSsCoordenadas = list()
         #coordenadas dos cds na fita complementar
         self.complementsCDSsCoordenadas = list()
+
+        #coordenadas dos segmentos não codificantes na fita normal
+        self.nonCodings  = list()
+        #coordenadas dos segmentos não codificantes na fita complementar
+        self.complementsNonCodings  = list()
+
+
         
 
 
@@ -49,14 +51,20 @@ class NonCoding:
         except Exception as e:
             print(f"Erro inesperado: {e}")
             exit(1)
-    # Obter os cds
-    def getCDSs(self, directory: str) -> None:
+
+    # Obter as coordenadas dos CDSs
+    def getCoordenatesCDSs(self, directory: str) -> None:
         try:
             with open(directory, "r") as file:
                 cds = []
                 for line in file:
                     if line.startswith(">"):
-                        cds.append(line.strip())
+                        padrao = r"([cC]?\d+)-(\d+)"
+                        resultados = re.findall(padrao, line)
+
+                        if len(resultados) > 0:
+
+                            cds.append([resultados[0][0], resultados[0][1]])
             
             return cds
         except FileNotFoundError as e:
@@ -66,37 +74,75 @@ class NonCoding:
             print(f"Erro inesperado: {e}")
             exit(1)
     
-    def getCoordenadas(self, directory: str) -> None:
 
-        try:
-            with open(directory, "r") as file:
-                
-                for line in file:
-                    if  line.startswith(">"):
-                        padrao = r"([cC]?\d+)-(\d+)"
-                        resultados = re.findall(padrao, line)
-
-                        if len(resultados) > 0:
-
-                            self.cds.append([int(resultados[0][0].replace("c", "")), int(resultados[0][1])])
-    
-        except FileNotFoundError as e:
-            print(e)
-            exit(1)
-        except Exception as e:
-            print(f"Erro inesperado: {e}")
-            exit(1)
-
-    #verifica se os cds estao ordenados
    
 
-    def defineNonCdsCoordinate(self):
+    def defineNonCdsCoordinate(self, complement = False):
         
 
         try:
-            ...
+            if not complement:
+                length = len(self.sequence[1])
+                array = ['-'] * length
+ 
+                                                                            
+                
 
-            
+                for coordenada in self.CDSsCoordenadas:
+                    
+                    array[int(coordenada[0]):int(coordenada[1])] = self.sequence[1][int(coordenada[0]):int(coordenada[1])]
+                
+                
+                start = 0
+                started = True
+                for n in range(len(array) -1):
+                    if array[n] == "-":
+                        end = n
+
+                    if array[n +  1] != "-":
+                        started = True
+
+                    if array[n + 1] != "-" and started:
+                        self.nonCodings.append([start, end])
+                        
+                        start = n + 1
+                        started = False
+                end = len(array) - 1
+                self.nonCodings.append([start, end])
+
+            else:
+                length = len(self.sequence[1])
+                array = ['-'] * length
+ 
+                                                                            
+                
+                segment = self.complement[1][::-1]
+                for coordenada in self.CDSsCoordenadas:
+                    
+                    array[int(coordenada[1]):int(coordenada[0].replace('c', ''))] = segment[int(coordenada[1]):int(coordenada[0].replace('c', ''))]
+                
+                
+                start = 0
+                started = True
+                for n in range(len(array) -1):
+                    if array[n] == "-":
+                        end = n
+
+                    if array[n +  1] != "-":
+                        started = True
+
+                    if array[n + 1] != "-" and started:
+                        self.complementsNonCodings.append([end,start])
+                        
+                        start = n + 1
+                        started = False
+                end = len(array) - 1
+                self.complementsNonCodings.append([end,start])
+                self.complementsNonCodings = self.complementsNonCodings[::-1]
+                
+                
+                
+               
             
         except Exception as e:
             print(f"Erro inesperado: {e}")
@@ -212,12 +258,18 @@ if __name__ == "__main__":
     nonCoding.complement = nonCoding.getSequence(complementPath)
     print("sequência obtida com sucesso")
 
-    print("colhendo CDSs na fita normal")
-    nonCoding.CDSsHeaders = nonCoding.getCDSs(CDSsPath)
-    print("CDSs obtidos com sucesso")
-    print("colhendo CDSs na fita complementar")
-    nonCoding.complementsCDSsHeaders = nonCoding.getCDSs(CDSsComplementPath)
-    print("CDSs na fita complementar obtidos com sucesso")
+    print("colhendo coordeanadas dos CDSs na fita normal")
+    nonCoding.CDSsCoordenadas = nonCoding.getCoordenatesCDSs(CDSsPath)
+    print("coordenadas dos CDSs obtidos com sucesso")
+    print("colhendo coordeanadas dos CDSs na fita complementar")
+    nonCoding.complementsCDSsCoordenadas = nonCoding.getCoordenatesCDSs(CDSsComplementPath)
+    print("coordenadas dos CDSs na fita complementar obtidos com sucesso")
+
+    nonCoding.defineNonCdsCoordinate()
+    nonCoding.defineNonCdsCoordinate(complement = True)
+
+    print(nonCoding.nonCodings[0], nonCoding.nonCodings[len(nonCoding.nonCodings) - 1])
+    print(nonCoding.complementsNonCodings[0], nonCoding.complementsNonCodings[len(nonCoding.complementsNonCodings) - 1])
     
 
 
