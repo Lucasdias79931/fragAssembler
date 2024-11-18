@@ -17,6 +17,11 @@ class NonCoding:
         #coordenadas dos segmentos não codificantes na fita complementar
         self.complementsNonCodings  = list()
 
+        #sequência dos segmentos não codificantes na fita normal
+        self.nonCodingsSequence = list()
+        #sequência dos segmentos não codificantes na fita complementar
+        self.complementsNonCodingsSequence = list()
+
 
         
 
@@ -87,58 +92,60 @@ class NonCoding:
  
                                                                             
                 
-
+        
                 for coordenada in self.CDSsCoordenadas:
                     
                     array[int(coordenada[0]):int(coordenada[1])] = self.sequence[1][int(coordenada[0]):int(coordenada[1])]
                 
                 
                 start = 0
-                started = True
                 for n in range(len(array) -1):
                     if array[n] == "-":
                         end = n
+                        if n == len(array) - 1:
+                            self.nonCodings.append([f"{start}", f"{end}"])
+                    else:
+                        if array[n - 1] == "-":
+                            self.nonCodings.append([f"{start}", f"{end}"])
+                            
+                        else:
+                            start = n
 
-                    if array[n +  1] != "-":
-                        started = True
+                    
 
-                    if array[n + 1] != "-" and started:
-                        self.nonCodings.append([start, end])
-                        
-                        start = n + 1
-                        started = False
-                end = len(array) - 1
-                self.nonCodings.append([start, end])
+                   
+               
+                
 
             else:
                 length = len(self.sequence[1])
                 array = ['-'] * length
  
                                                                             
-                
-                segment = self.complement[1][::-1]
-                for coordenada in self.CDSsCoordenadas:
+                sequence = self.complement[1][::-1]
+
+               
+                for coordenada in self.complementsCDSsCoordenadas:
                     
-                    array[int(coordenada[1]):int(coordenada[0].replace('c', ''))] = segment[int(coordenada[1]):int(coordenada[0].replace('c', ''))]
+                    array[int(coordenada[1]):int(coordenada[0].replace('c', ''))] = sequence[int(coordenada[1]):int(coordenada[0].replace('c', ''))]
                 
                 
                 start = 0
-                started = True
                 for n in range(len(array) -1):
                     if array[n] == "-":
                         end = n
-
-                    if array[n +  1] != "-":
-                        started = True
-
-                    if array[n + 1] != "-" and started:
-                        self.complementsNonCodings.append([end,start])
+                        if n == len(array) - 1:
+                            
+                            self.complementsNonCodings.append([f"c{end}", f"{start}"])
+                    else:
+                        if array[n - 1] == "-":
+                            
+                            self.complementsNonCodings.append([f"c{end}", f"{start}"])
+                          
+                        else:
+                            start = n
                         
-                        start = n + 1
-                        started = False
-                end = len(array) - 1
-                self.complementsNonCodings.append([end,start])
-                self.complementsNonCodings = self.complementsNonCodings[::-1]
+                
                 
                 
                 
@@ -149,7 +156,7 @@ class NonCoding:
             exit(1)
         
     # prepara o cabeçalho de cada segmento
-    def prepareCab(self, coordenada):
+    def prepareCab(self, coordenada, complement = False):
         try:
             header = self.sequence[0]
             pattern = r'^(.*?) (.*)$'
@@ -157,13 +164,8 @@ class NonCoding:
 
             if match:
                 header = list(match.groups())
-                
-                if self.complementar:
-                    coordenada[0] = 'c' + str(coordenada[0])
-
-                # Converte os elementos de coordenada para strings antes de usar join
-                coordenada_str = list(map(str, coordenada))
-                return f">{header[0]}:{('-'.join(coordenada_str))} {header[1]}"
+            
+                return f">{header[0]}:{'-'.join(coordenada)} {header[1]}"
             else:
                 raise ValueError("Formato do cabeçalho inválido.")
         except Exception as e:
@@ -171,31 +173,23 @@ class NonCoding:
             print(f"Erro inesperado: {e}")
             exit(1)
 
-
-    def defineNonCds(self):
+    # define os segmentos não codificantes
+    def defineNonCds(self, complement = False):
         try:
             
         
-            if not self.complementar:
-                print("testando defineNonCds notComplement")
-                for index in range(len(self.nonCds) - 1):
-                    
-                    if self.nonCds[index][1] < self.nonCds[index + 1][0]:
-                        print(index)
-                        print("Coordenada na fita complementar inválida ")
-                        exit(1)
-                print("Coordenadas verificadas com sucesso. function defineNonCds ok")
-                exit(1)
+            if not complement:
                 
-                for index in range(len(self.nonCds)):
-                    segment = self.sequence[1][int(self.nonCds[index][0]):int(self.nonCds[index][1])]
+                
+                for index in range(len(self.nonCodings)):
+                    segment = self.sequence[1][int(self.nonCodings[index][0]):int(self.nonCodings[index][1])]
                     
-                    header = self.prepareCab(self.nonCds[index])
+                    header = self.prepareCab(self.nonCodings[index])
                     
                     if segment:
-                        print(header, "adicionado")
                         
-                        self.finalSegments.append([header, ''.join(segment)])
+                        
+                        self.nonCodingsSequence.append([header, ''.join(segment)])
                     else:
 
                         
@@ -203,14 +197,24 @@ class NonCoding:
                         print("Segmento vazio")
                     
             else:
-                for index in self.nonCds:
-
-                    segment = self.sequence[1][index[1]:index[0]]
-                    header = self.prepareCab(index)
+                
+                for index in range(len(self.complementsNonCodings )):
+                    self.complement[1] = self.complement[1][::-1]
+                    segment = self.complement[1][int(self.complementsNonCodings[index][1]):int(self.complementsNonCodings[index][0].replace('c', ''))]
                     
+                    segment = segment[::-1]
+                    header = self.prepareCab(self.complementsNonCodings[index])
+                    
+
                     if segment:
-                        self.finalSegments.append([header, ''.join(segment)])
+                        
+                        
+                        self.complementsNonCodingsSequence.append([header, ''.join(segment)])
+                        
                     else:
+
+                        
+                        print(header, "nao adicionado")
                         print("Segmento vazio")
                         
 
@@ -220,12 +224,17 @@ class NonCoding:
             exit(1)
     
     # escreve os segmentos
-    def write(self, directory):
+    def write(self, directory, complement = False):
         try:
             with open(directory, "w") as file:
-                for segment in self.finalSegments:
-                    
-                    file.write(f"{segment[0]}\n{segment[1]}\n")
+                if not complement:
+                    for segment in self.nonCodingsSequence:
+                        
+                        file.write(f"{segment[0]}\n{segment[1]}\n")
+                else:
+                    for segment in self.complementsNonCodingsSequence :
+                        
+                        file.write(f"{segment[0]}\n{segment[1]}\n")
             print("Inscrição realizada com sucesso!")
 
         except FileExistsError as e:   
@@ -248,7 +257,7 @@ if __name__ == "__main__":
     CDSsPath = os.path.join(here, "CDSsPreparados/cds.fasta")
     CDSsComplementPath = os.path.join(here, "CDSsPreparados/cdsInC.fasta")
 
-    os.makedirs(os.path.join(here, "NonCds"), exist_ok=True)
+   
     
     nonCoding = NonCoding()
     print("colhendo sequência na fita normal")
@@ -265,13 +274,33 @@ if __name__ == "__main__":
     nonCoding.complementsCDSsCoordenadas = nonCoding.getCoordenatesCDSs(CDSsComplementPath)
     print("coordenadas dos CDSs na fita complementar obtidos com sucesso")
 
+    print("colhendo coordeanadas dos nonCds na fita normal")
     nonCoding.defineNonCdsCoordinate()
+    print("coordenadas dos nonCds obtidos com sucesso")
+    print("colhendo coordeanadas dos nonCds na fita complementar")
     nonCoding.defineNonCdsCoordinate(complement = True)
+    print("coordenadas dos nonCds na fita complementar obtidos com sucesso")
 
-    print(nonCoding.nonCodings[0], nonCoding.nonCodings[len(nonCoding.nonCodings) - 1])
-    print(nonCoding.complementsNonCodings[0], nonCoding.complementsNonCodings[len(nonCoding.complementsNonCodings) - 1])
-    
+    print("definindo os nonCds na fita normal")
+    nonCoding.defineNonCds()
+    print("nonCds na fita normal definidos com sucesso")
+    print("definindo os nonCds na fita complementar")
+    nonCoding.defineNonCds(complement = True)
+    print("nonCds na fita complementar definidos com sucesso")
 
+   
+    os.makedirs(os.path.join(here, "NonCds"), exist_ok=True)
+    nonCodingPath = os.path.join(here, "NonCds/nonCds.fasta")
+    nonCodingComplementPath = os.path.join(here, "NonCds/nonCdsInC.fasta")
+
+    #Escreve os nonCds na fita normal
+    print("escrevendo os nonCds na fita normal")
+    nonCoding.write(nonCodingPath)
+    print("nonCds escritos com sucesso")
+    #Escreve os nonCds na fita complementar
+    print("escrevendo os nonCds na fita complementar")
+    nonCoding.write(nonCodingComplementPath, True)
+    print("nonCds escritos com sucesso")
 
     end = time.time() - start
     print("Interação com o arquivo finalizado com sucesso")
