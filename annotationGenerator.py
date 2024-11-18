@@ -37,53 +37,62 @@ class annotation:
 ############### execução ########################
 
 if __name__ == "__main__":
-    base_directory = os.getcwd()
+    
+    here = os.path.dirname(os.path.abspath(__file__))
     Annotation = annotation()
 
     try:
-        for i in range(1, 12):
-            
-            CDSComplement = os.path.join(base_directory,f"CDSsComplementarPreparadosParaAlinhar/cds{i}.fasta")
-            os.makedirs("Anotacoes/CDSsComplements/", exist_ok=True)
-            destine = os.path.join(base_directory, f"Anotacoes/CDSsComplements/cds{i}.fasta")
+       
+       
 
-            
-            Annotation.getAnn(CDSComplement)
-            Annotation.writeAnn(destine)
-            Annotation.clear_Ann()
-        print("CDSs complementares anotados com sucesso!\n")
-    except SystemError as e:
-            print(e)
-        
-        
-    try:
-        for i in range(1, 27):
-            
-            CDS = os.path.join(base_directory,f"CDSsPreparadosParaAlinhar/cds{i}.fasta")
-            os.makedirs("Anotacoes/CDSs/", exist_ok=True)
-            destine = os.path.join(base_directory, f"Anotacoes/CDSs/cds{i}.fasta")
+        referenceSequence = os.path.join(here, "chromosome1HomoSapien/sequence.fasta")
+        referenceSequenceReversed = os.path.join(here, "chromosome1HomoSapien/reversedSequence.fasta")
+        cds = os.path.join(here, "CDSsPreparados/cds.fasta")
+        cdsInC = os.path.join(here, "CDSsPreparados/cdsInC.fasta")
+        nonCoding = os.path.join(here, "NonCds/nonCds.fasta")
+        nonCodingInC = os.path.join(here, "NonCds/nonCdsInC.fasta")
 
-            
-            Annotation.getAnn(CDS)
-            Annotation.writeAnn(destine)
-            Annotation.clear_Ann()
-        print("CDSs anotados com sucesso!\n")
-    except SystemError as e:
-            print(e)  
         
-    try:
-        print("Anotar sequência")
-        sequence = os.path.join(base_directory,"chromosome1HomoSapien/sequence.fasta")
-        os.makedirs("Anotacoes/chromosome/", exist_ok=True)
-        destine = os.path.join(base_directory, f"Anotacoes/chromosome/sequence.fasta")
 
-        Annotation.getAnn(sequence)
-        Annotation.writeAnn(destine)
+        destineSequence = os.path.join(here, "Anotacoes/sequenceAnn.fasta")
+        destineSequenceReversed = os.path.join(here, "Anotacoes/reversedSequenceAnn.fasta")
+        destineCds = os.path.join(here, "Anotacoes/cdsAnn.fasta")
+        destineCdsInC = os.path.join(here, "Anotacoes/cdsInCAnn.fasta")
+        destineNonCds = os.path.join(here, "Anotacoes/nonCdsAnn.fasta")
+        destineNonCdsInC = os.path.join(here, "Anotacoes/nonCdsInCAnn.fasta")
+        
+
+        os.makedirs(os.path.join(here, "Anotacoes"), exist_ok=True)
+        
+        Annotation.getAnn(referenceSequence)
+        Annotation.writeAnn(destineSequence)
         Annotation.clear_Ann()
 
-        print("Sequência anotada com suceso!\n")
+        Annotation.getAnn(referenceSequenceReversed)
+        Annotation.writeAnn(destineSequenceReversed)
+        Annotation.clear_Ann()
+
+        Annotation.getAnn(cds)
+        Annotation.writeAnn(destineCds)
+        Annotation.clear_Ann()
+
+        Annotation.getAnn(cdsInC)
+        Annotation.writeAnn(destineCdsInC)
+        Annotation.clear_Ann()
+
+        Annotation.getAnn(nonCoding)
+        Annotation.writeAnn(destineNonCds)
+        Annotation.clear_Ann()
+
+        Annotation.getAnn(nonCodingInC)
+        Annotation.writeAnn(destineNonCdsInC)
+        Annotation.clear_Ann()
+    
     except SystemError as e:
             print(e)
+        
+        
+   
 
     
     
