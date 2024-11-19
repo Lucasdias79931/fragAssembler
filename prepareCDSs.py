@@ -52,7 +52,11 @@ class PrepareCDSs:
                 
                 for i in range(len(resultados)):
                     
-                        
+                    if resultados[i][0].startswith('c'):
+                        coordenada = [resultados[i][1], resultados[i][0]]
+                        self.coordenadas.append(coordenada)
+                        continue
+
                     coordenada = [resultados[i][0], resultados[i][1]]
             
                     self.coordenadas.append(coordenada)
@@ -84,12 +88,12 @@ class PrepareCDSs:
         
 
         try:
-            self.complement[1] = self.complement[1][::-1]
+            
 
             for coordenada in self.coordenadas:
-                if coordenada[0].startswith('c'):
-                    seg = self.complement[1][int(coordenada[1]):int(coordenada[0].replace('c', ''))]
-                    segment = [self.prepareCab(coordenada), seg[::-1]]
+                if coordenada[1].startswith('c'):
+                    
+                    segment = [self.prepareCab(coordenada), self.complement[1][int(coordenada[0]):int(coordenada[1].replace('c', ''))]]
                     self.finalSegments.append(segment)
                 else:
                     segment = [self.prepareCab(coordenada), self.sequence[1][int(coordenada[0]):int(coordenada[1])]]
@@ -104,10 +108,10 @@ class PrepareCDSs:
     # escreve os CDSs nos arquivos.fasta 
     def write(self, cdsPath, cdsCPat):
         try:
-            with open(cdsPath, "a") as file:
-                with open(cdsCPat, "a") as fileC:
+            with open(cdsPath, "w") as file:
+                with open(cdsCPat, "w") as fileC:
                     for segment in range(len(self.coordenadas)):
-                        if self.coordenadas[segment][0].startswith('c'):
+                        if self.coordenadas[segment][1].startswith('c'):
                             fileC.write(f"{self.finalSegments[segment][0]}\n{self.finalSegments[segment][1]}\n")
                         else:
                             file.write(f"{self.finalSegments[segment][0]}\n{self.finalSegments[segment][1]}\n")

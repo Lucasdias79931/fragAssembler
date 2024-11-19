@@ -16,18 +16,24 @@ prepCds.getSequence(os.path.join(here, f"chromosome1HomoSapien/CDS{2}.fasta"), T
 prepCds.getCoordenadas()
 prepCds.defineSegments()
 
+
+
 cds2Path = os.path.join(here, "chromosome1HomoSapien/CDS2.fasta")
 
-cds2 = ''
+cds2 = list()
 
 try:
     with open(cds2Path, "r") as file:
         seq = []
+        header = ''
         for line in file:
             if not line.startswith(">"):
                 seq.append(line.strip())
+            else:
+                header = line.strip().replace(">", "")
+                seq = []
             
-        cds2 = ''.join(seq)
+        cds2 = [header,''.join(seq)]
 
 except FileNotFoundError as e:
     print(e)
@@ -36,7 +42,10 @@ except Exception as e:
     print(f"Erro inesperado: {e}")
     exit(1)
 
-if prepCds.finalSegments[0][1] in cds2:
+coo = [int(prepCds.coordenadas[0][1]), int(prepCds.coordenadas[0][0].replace('c', ''))]
+segment = prepCds.complement[1][coo[0]:coo[1]]
+
+if segment[::-1] in cds2[1]:
     print("sim")
 else:
     print("nao")

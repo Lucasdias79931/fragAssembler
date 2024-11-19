@@ -64,7 +64,7 @@ class NonCoding:
                 cds = []
                 for line in file:
                     if line.startswith(">"):
-                        padrao = r"([cC]?\d+)-(\d+)"
+                        padrao = r"(\d+)-([cC]?\d+)"
                         resultados = re.findall(padrao, line)
 
                         if len(resultados) > 0:
@@ -122,12 +122,12 @@ class NonCoding:
                 array = ['-'] * length
  
                                                                             
-                sequence = self.complement[1][::-1]
+                
 
                
                 for coordenada in self.complementsCDSsCoordenadas:
                     
-                    array[int(coordenada[1]):int(coordenada[0].replace('c', ''))] = sequence[int(coordenada[1]):int(coordenada[0].replace('c', ''))]
+                    array[int(coordenada[0]):int(coordenada[1].replace('c', ''))] = self.complement[1][int(coordenada[0]):int(coordenada[1].replace('c', ''))]
                 
                 
                 start = 0
@@ -136,11 +136,11 @@ class NonCoding:
                         end = n
                         if n == len(array) - 1:
                             
-                            self.complementsNonCodings.append([f"c{end}", f"{start}"])
+                            self.complementsNonCodings.append([f"{start}", f"c{end}"])
                     else:
                         if array[n - 1] == "-":
                             
-                            self.complementsNonCodings.append([f"c{end}", f"{start}"])
+                            self.complementsNonCodings.append([f"{start}", f"c{end}"])
                           
                         else:
                             start = n
@@ -156,7 +156,7 @@ class NonCoding:
             exit(1)
         
     # prepara o cabeçalho de cada segmento
-    def prepareCab(self, coordenada, complement = False):
+    def prepareCab(self, coordenada):
         try:
             header = self.sequence[0]
             pattern = r'^(.*?) (.*)$'
@@ -199,10 +199,10 @@ class NonCoding:
             else:
                 
                 for index in range(len(self.complementsNonCodings )):
-                    self.complement[1] = self.complement[1][::-1]
-                    segment = self.complement[1][int(self.complementsNonCodings[index][1]):int(self.complementsNonCodings[index][0].replace('c', ''))]
                     
-                    segment = segment[::-1]
+                    segment = self.complement[1][int(self.complementsNonCodings[index][0]):int(self.complementsNonCodings[index][1].replace('c', ''))]
+                    
+                    
                     header = self.prepareCab(self.complementsNonCodings[index])
                     
 
