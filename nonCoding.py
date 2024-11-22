@@ -94,9 +94,12 @@ class NonCoding:
                 
         
                 for coordenada in self.CDSsCoordenadas:
-                    
-                    array[int(coordenada[0]):int(coordenada[1])] = self.sequence[1][int(coordenada[0]):int(coordenada[1])]
-                
+                    if not coordenada[0] == '0':
+                        array[int(coordenada[0]) - 1:int(coordenada[1])] = self.sequence[1][int(coordenada[0]) - 1:int(coordenada[1])]
+                        #necessario para não pegar indice negativo
+                        
+                    else:
+                        array[int(coordenada[0]):int(coordenada[1])] = self.sequence[1][int(coordenada[0]):int(coordenada[1])]
                 
                 start = 0
                 for n in range(len(array) -1):
@@ -126,9 +129,12 @@ class NonCoding:
 
                
                 for coordenada in self.complementsCDSsCoordenadas:
-                    
-                    array[int(coordenada[0]):int(coordenada[1].replace('c', ''))] = self.complement[1][int(coordenada[0]):int(coordenada[1].replace('c', ''))]
-                
+                    if not coordenada[0] == '0':
+                        array[int(coordenada[0]) - 1:int(coordenada[1].replace('c', ''))] = self.complement[1][int(coordenada[0]) - 1:int(coordenada[1].replace('c', ''))]
+                    else:
+                        #nessario para não pegar indice negativo
+                        array[int(coordenada[0]):int(coordenada[1].replace('c', ''))] = self.complement[1][int(coordenada[0]):int(coordenada[1].replace('c', ''))]
+
                 
                 start = 0
                 for n in range(len(array) -1):
@@ -182,8 +188,12 @@ class NonCoding:
                 
                 
                 for index in range(len(self.nonCodings)):
-                    segment = self.sequence[1][int(self.nonCodings[index][0]):int(self.nonCodings[index][1])]
                     
+                    if not self.nonCodings[index][0] == '0':
+
+                        segment = self.sequence[1][int(self.nonCodings[index][0]) - 1 :int(self.nonCodings[index][1]) ]
+                    else:
+                        segment = self.sequence[1][int(self.nonCodings[index][0]) :int(self.nonCodings[index][1])]
                     header = self.prepareCab(self.nonCodings[index])
                     
                     if segment:
@@ -199,9 +209,10 @@ class NonCoding:
             else:
                 
                 for index in range(len(self.complementsNonCodings )):
-                    
-                    segment = self.complement[1][int(self.complementsNonCodings[index][0]):int(self.complementsNonCodings[index][1].replace('c', ''))]
-                    
+                    if not self.complementsNonCodings[index][0] == '0':
+                        segment = self.complement[1][int(self.complementsNonCodings[index][0]) - 1:int(self.complementsNonCodings[index][1].replace('c', ''))]
+                    else:
+                        segment = self.complement[1][int(self.complementsNonCodings[index][0]):int(self.complementsNonCodings[index][1].replace('c', ''))]
                     
                     header = self.prepareCab(self.complementsNonCodings[index])
                     

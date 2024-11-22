@@ -93,10 +93,10 @@ class PrepareCDSs:
             for coordenada in self.coordenadas:
                 if coordenada[1].startswith('c'):
                     
-                    segment = [self.prepareCab(coordenada), self.complement[1][int(coordenada[0]):int(coordenada[1].replace('c', ''))]]
+                    segment = [self.prepareCab(coordenada), self.complement[1][int(coordenada[0]) - 1:int(coordenada[1].replace('c', '')) ]]
                     self.finalSegments.append(segment)
                 else:
-                    segment = [self.prepareCab(coordenada), self.sequence[1][int(coordenada[0]):int(coordenada[1])]]
+                    segment = [self.prepareCab(coordenada), self.sequence[1][int(coordenada[0]) - 1:int(coordenada[1]) ]]
                     self.finalSegments.append(segment)
 
         except Exception as e:
