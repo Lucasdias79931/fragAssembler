@@ -164,7 +164,7 @@ if __name__ == "__main__":
         with open(CDSsTraduzidosPath, "w") as file:
             for segment in coding.segments:
                 
-                file.write(segment[0] + "\n\n")
+                file.write(">" + segment[0] + "\n\n")
 
                 for i in range(3):
 
@@ -191,7 +191,7 @@ if __name__ == "__main__":
         with open(CDSsTraduzidosPathComplement, "w") as file:
             for segment in coding.segmentsInComplement:
                 
-                file.write(segment[0] + "\n\n")
+                file.write(">" + segment[0] + "\n\n")
 
                 for i in range(3):
 
